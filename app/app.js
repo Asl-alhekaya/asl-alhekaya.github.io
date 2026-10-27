@@ -235,6 +235,96 @@ function renderLog(eps) {
   view.appendChild(cs);
 }
 
+// Production (order 6, 2026-10-28): open jobs, the video waiting for your opinion (gate 2) and the credits.
+// «ممتاز» and «عدّل لقطات» here do exactly what the chat buttons do; the bot confirms in the chat.
+function money(cents) { return '$' + (Number(cents || 0) / 100).toFixed(2); }
+
+function reviewCard(j) {
+  var c = el('div', 'card');
+  c.appendChild(el('h2', '', 'فيديو ينتظر رأيك'));
+  c.appendChild(el('div', 'nm', j.episode || ('مهمة ' + j.id)));
+  c.appendChild(el('div', 'mt', 'الفيديو والصورة اللي فيها اللقطات مرقمة وصلتك بالمحادثة.'));
+  var ok = el('button', 'act', 'ممتاز ✅ (جاهزة للنشر)');
+  ok.onclick = function () {
+    var go = function (yes) {
+      if (!yes) return;
+      ok.disabled = true;
+      api('approveVideo', { id: j.id }).then(function (r) {
+        toast(r.ok ? 'تمام، صارت جاهزة للنشر' : 'ما تسجلت، جرّب من المحادثة');
+        load('prod');
+      });
+    };
+    if (tg && tg.showConfirm) tg.showConfirm('أكيد الفيديو ممتاز؟ (النشر يبقى يحتاج «اعتمد النشر»)', go);
+    else go(window.confirm('أكيد الفيديو ممتاز؟'));
+  };
+  c.appendChild(ok);
+  c.appendChild(el('label', '', 'أرقام اللقطات اللي تبي تتعدل'));
+  var shots = el('input');
+  shots.placeholder = 'مثل: 3, 7';
+  shots.maxLength = 40;
+  c.appendChild(shots);
+  c.appendChild(el('label', '', 'ملاحظتك'));
+  var note = el('input');
+  note.placeholder = 'مثل: خل العملة ذهبية';
+  note.maxLength = 250;
+  c.appendChild(note);
+  var fix = el('button', 'act', 'رجّعها للكمبيوتر 🔁');
+  fix.onclick = function () {
+    if (!/[0-9٠-٩]/.test(shots.value)) { toast('اكتب رقم لقطة وحدة على الأقل'); return; }
+    fix.disabled = true;
+    api('fixShots', { id: j.id, shots: shots.value, note: note.value.trim() }).then(function (r) {
+      toast(r.ok ? 'رجعت للكمبيوتر' : 'ما رجعت، جرّب من المحادثة');
+      load('prod');
+    });
+  };
+  c.appendChild(fix);
+  return c;
+}
+
+function creditsCard(cr) {
+  var c = el('div', 'card');
+  c.appendChild(el('h2', '', 'الرصيد'));
+  if (!cr || !cr.ok) { c.appendChild(el('p', 'empty', 'ما قدرت أقرا الرصيد.')); return c; }
+  var row = function (name, value) {
+    var r = el('div', 'row');
+    r.appendChild(el('span', 'nm', name));
+    r.appendChild(el('span', 'big', value));
+    c.appendChild(r);
+  };
+  row('كلود (كتابة النصوص)', '$' + cr.claude.left.toFixed(2) + ' من $' + cr.claude.start);
+  c.appendChild(el('div', 'mt', 'هالشهر ' + '$' + cr.claude.usd.toFixed(2) + ' في ' + cr.claude.calls + ' طلب'));
+  var pc = cr.pc || {};
+  if (pc.vertex_month_cents !== undefined) {
+    row('قوقل (الفيديو) هالشهر', money(pc.vertex_month_cents) + (pc.vertex_cap_cents ? ' من ' + money(pc.vertex_cap_cents) : ''));
+  }
+  if (pc.eleven_left !== undefined) {
+    row('إلفن لابز (الصوت) الباقي', num(pc.eleven_left) + (pc.eleven_limit ? ' من ' + num(pc.eleven_limit) : ''));
+  }
+  c.appendChild(el('div', 'mt', pc.at ? 'أرقام الكمبيوتر من آخر مسودة: ' + pc.at.substring(0, 16).replace('T', ' ') :
+    'أرقام قوقل وإلفن لابز تظهر بعد أول مسودة من الكمبيوتر.'));
+  return c;
+}
+
+function renderProd(d, cr) {
+  clear();
+  pageHead('الإنتاج', 'وين وصلت كل حلقة');
+  var waiting = d.jobs.filter(function (j) { return j.review; });
+  if (waiting.length) view.appendChild(reviewCard(waiting[waiting.length - 1]));
+  var box = el('div', 'card');
+  if (!d.jobs.length) box.appendChild(el('p', 'empty', 'ما فيه حلقة شغالة الحين.'));
+  d.jobs.forEach(function (j) {
+    var r = el('div', 'row');
+    var left = el('div');
+    left.appendChild(el('div', 'nm', j.episode || ('مهمة ' + j.id)));
+    left.appendChild(el('div', 'mt', j.stateAr + ' · من ' + j.minutes + ' د'));
+    if (j.note) left.appendChild(el('div', 'mt', j.note));
+    r.appendChild(left);
+    box.appendChild(r);
+  });
+  view.appendChild(box);
+  view.appendChild(creditsCard(cr));
+}
+
 // ---------- navigation
 
 function load(tab) {
@@ -243,6 +333,9 @@ function load(tab) {
   if (tab === 'home') api('home').then(function (r) { r.ok ? renderHome(r) : fail(r); });
   else if (tab === 'episodes') api('episodes').then(function (r) { r.ok ? renderEpisodes(r) : fail(r); });
   else if (tab === 'queue') api('queue').then(function (r) { r.ok ? renderQueue(r) : fail(r); });
+  else if (tab === 'prod') {
+    Promise.all([api('jobs'), api('credits')]).then(function (r) { r[0].ok ? renderProd(r[0], r[1]) : fail(r[0]); });
+  }
   else if (tab === 'log') {
     var go = function (eps) { renderLog(eps); };
     if (cache.episodes) go(cache.episodes);
