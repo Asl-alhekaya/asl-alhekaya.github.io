@@ -34,6 +34,11 @@ h2 { font-size: 16px; margin: 18px 0 8px; }
 input, select, button.act { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; width: 100%; }
 button.act { background: var(--gold); color: #1A1405; font-weight: 800; border: 0; margin-top: 8px; cursor: pointer; }
 button.act:disabled { opacity: .5; }
+button.big-btn { font-size: 20px; padding: 16px 12px; }
+button.ghost { background: var(--bg); color: var(--ink); border: 1px solid var(--line); font-weight: 700; }
+.state { font-size: 24px; font-weight: 800; margin: 2px 0; }
+.state.on { color: var(--green); } .state.off { color: var(--muted); }
+.warn { color: var(--gold); }
 label { display: block; color: var(--muted); font-size: 13px; margin: 10px 0 4px; }
 .stage { width: auto; padding: 6px 8px; font-size: 13px; }
 .empty { color: var(--muted); text-align: center; padding: 18px 0; }

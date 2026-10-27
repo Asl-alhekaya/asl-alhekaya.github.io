@@ -305,9 +305,90 @@ function creditsCard(cr) {
   return c;
 }
 
-function renderProd(d, cr) {
+// The worker card (phase 4, 2026-10-27): one big switch for the PC worker, its status, the job it holds, the caps and the
+// «اسمع الصوت» gate. Every change is confirmed and the bot writes it in the chat too, so the chat keeps the record.
+function confirmThen(text, fn) {
+  if (tg && tg.showConfirm) tg.showConfirm(text, function (yes) { if (yes) fn(); });
+  else if (window.confirm(text)) fn();
+}
+
+function workerCard(w) {
+  var c = el('div', 'card');
+  c.appendChild(el('h2', '', 'العامل (الكمبيوتر)'));
+  if (!w || !w.ok) { c.appendChild(el('p', 'empty', 'ما قدرت أقرا حالة العامل.')); return c; }
+  var pc = w.pc || {};
+  c.appendChild(el('div', 'state ' + (w.enabled ? 'on' : 'off'), w.enabled ? '▶️ شغّال' : '⏸️ واقف'));
+  c.appendChild(el('div', 'mt', pc.online ? '🟢 الكمبيوتر متصل (قبل ' + pc.seen_min + ' د)' :
+    (pc.seen_min === null ? '🔴 الكمبيوتر ما اتصل للحين' : '🔴 الكمبيوتر طافي (آخر مرة قبل ' + pc.seen_min + ' د)')));
+  var sw = el('button', 'act big-btn', w.enabled ? '⏸️ وقّف العامل' : '▶️ شغّل العامل');
+  sw.onclick = function () {
+    confirmThen(w.enabled ? 'توقف العامل؟ الحلقة الشغالة الحين تكمل، والجديد ما يبدأ.' :
+      'تشغّل العامل؟ الكمبيوتر بياخذ الحلقات اللي بالطابور ويصرف من الرصيد حسب السقف.', function () {
+      sw.disabled = true;
+      api('setWorker', { on: !w.enabled }).then(function (r) {
+        toast(r.ok ? (r.enabled ? 'العامل شغّال' : 'العامل واقف') : 'ما تغيّر، جرّب مرة ثانية');
+        load('prod');
+      });
+    });
+  };
+  c.appendChild(sw);
+  if (w.job) {
+    var j = w.job, line = j.name + ' — ' + j.stateAr + (j.stageAr ? ' · ' + j.stageAr : '');
+    if (j.total) line += ' ' + j.done + '/' + j.total;
+    c.appendChild(el('div', 'nm', line));
+    var meta = [];
+    if (j.spent_cents !== undefined) meta.push('صرفنا ' + money(j.spent_cents));
+    if (j.eta_min) meta.push('باقي تقريباً ' + Math.round(j.eta_min) + ' د');
+    meta.push('آخر تحديث قبل ' + j.minutes + ' د');
+    c.appendChild(el('div', 'mt', meta.join(' · ')));
+  } else {
+    c.appendChild(el('div', 'mt', 'ما فيه حلقة عند الكمبيوتر الحين.'));
+  }
+  if (w.last_stop) {
+    c.appendChild(el('div', 'mt warn', 'آخر توقف: ' + (w.last_stop.episode || '') + ' — ' + w.last_stop.text +
+      ' (' + String(w.last_stop.at || '').substring(0, 16).replace('T', ' ') + ')'));
+  }
+  var gate = el('button', 'act ghost', '🎙️ اسمع الصوت قبل الصرف: ' + (w.voice_gate ? 'مفعّل ✅' : 'طافي'));
+  gate.onclick = function () {
+    gate.disabled = true;
+    api('setVoiceGate', { on: !w.voice_gate }).then(function (r) {
+      toast(r.ok ? 'تم' : 'ما تغيّر');
+      load('prod');
+    });
+  };
+  c.appendChild(gate);
+  var caps = w.caps || {};
+  c.appendChild(el('label', '', 'سقف الشهر بالدولار (0 = يوقف الصرف، فاضي = سقف الكمبيوتر ' + caps.max + ')'));
+  var month = el('input');
+  month.inputMode = 'decimal';
+  month.value = caps.month === null || caps.month === undefined ? '' : String(caps.month);
+  c.appendChild(month);
+  c.appendChild(el('label', '', 'سقف اليوم بالدولار (0 = يوقف الصرف، فاضي = سقف الكمبيوتر)'));
+  var day = el('input');
+  day.inputMode = 'decimal';
+  day.value = caps.day === null || caps.day === undefined ? '' : String(caps.day);
+  c.appendChild(day);
+  var save = el('button', 'act', 'احفظ السقف 💾');
+  save.onclick = function () {
+    var bad = [month.value, day.value].some(function (v) {
+      var t = v.trim();
+      return t !== '' && !(Number(t) >= 0 && Number(t) <= caps.max);
+    });
+    if (bad) { toast('الرقم لازم من 0 إلى ' + caps.max); return; }
+    save.disabled = true;
+    api('setCaps', { month: month.value.trim(), day: day.value.trim() }).then(function (r) {
+      toast(r.ok ? 'انحفظ السقف' : 'ما انحفظ');
+      load('prod');
+    });
+  };
+  c.appendChild(save);
+  return c;
+}
+
+function renderProd(d, cr, w) {
   clear();
   pageHead('الإنتاج', 'وين وصلت كل حلقة');
+  view.appendChild(workerCard(w));
   var waiting = d.jobs.filter(function (j) { return j.review; });
   if (waiting.length) view.appendChild(reviewCard(waiting[waiting.length - 1]));
   var box = el('div', 'card');
@@ -334,7 +415,9 @@ function load(tab) {
   else if (tab === 'episodes') api('episodes').then(function (r) { r.ok ? renderEpisodes(r) : fail(r); });
   else if (tab === 'queue') api('queue').then(function (r) { r.ok ? renderQueue(r) : fail(r); });
   else if (tab === 'prod') {
-    Promise.all([api('jobs'), api('credits')]).then(function (r) { r[0].ok ? renderProd(r[0], r[1]) : fail(r[0]); });
+    Promise.all([api('jobs'), api('credits'), api('worker')]).then(function (r) {
+      r[0].ok ? renderProd(r[0], r[1], r[2]) : fail(r[0]);
+    });
   }
   else if (tab === 'log') {
     var go = function (eps) { renderLog(eps); };
