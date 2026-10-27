@@ -399,6 +399,16 @@ function renderProd(d, cr, w) {
     left.appendChild(el('div', 'nm', j.episode || ('مهمة ' + j.id)));
     left.appendChild(el('div', 'mt', j.stateAr + ' · من ' + j.minutes + ' د'));
     if (j.note) left.appendChild(el('div', 'mt', j.note));
+    if (j.voice) {  // voice gate: the audio and the numbered lines came in the chat; fixes go there («عدّل سطر 3: …»)
+      var ok = el('button', 'act', 'الصوت تمام 🎙️✅');
+      ok.onclick = function () {
+        confirmThen('سمعت الصوت وتمام؟ بعدها يبدأ الصرف على الصور والمقاطع.', function () {
+          ok.disabled = true;
+          api('voiceOk', { id: j.id }).then(function (res) { toast(res.ok ? 'اعتمدت الصوت' : 'ما تسجل، جرّب من المحادثة'); load('prod'); });
+        });
+      };
+      left.appendChild(ok);
+    }
     r.appendChild(left);
     box.appendChild(r);
   });
