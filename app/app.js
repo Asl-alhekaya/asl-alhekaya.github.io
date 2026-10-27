@@ -399,6 +399,10 @@ function renderProd(d, cr, w) {
     left.appendChild(el('div', 'nm', j.episode || ('مهمة ' + j.id)));
     left.appendChild(el('div', 'mt', j.stateAr + ' · من ' + j.minutes + ' د'));
     if (j.note) left.appendChild(el('div', 'mt', j.note));
+    if (j.cost) {
+      left.appendChild(el('div', 'mt', '💵 قوقل $' + j.cost.google.toFixed(2) + ' · صوت ' + num(j.cost.eleven) + ' حرف · كلود البوت $' +
+        j.cost.claude_bot.toFixed(2) + ' · ' + j.cost.minutes + ' د'));
+    }
     if (j.voice) {  // voice gate: the audio and the numbered lines came in the chat; fixes go there («عدّل سطر 3: …»)
       var ok = el('button', 'act', 'الصوت تمام 🎙️✅');
       ok.onclick = function () {
