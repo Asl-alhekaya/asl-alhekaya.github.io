@@ -1,0 +1,170 @@
+[
+  {
+    "id": "EP-01",
+    "title": "الميكرويف",
+    "published": "2026-10-01",
+    "status": "published",
+    "cover": "card-ep01.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/NZ-fDGNd2bM",
+      "instagram": "https://www.instagram.com/reel/Dd9TlK2tt66/",
+      "facebook": "https://www.facebook.com/reel/3717001825115575/"
+    }
+  },
+  {
+    "id": "EP-02",
+    "title": "الأشعة السينية",
+    "published": "2026-10-04",
+    "status": "published",
+    "cover": "card-ep02.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/T27MLMI0veA",
+      "instagram": "https://www.instagram.com/reel/DeFch9TOriO/",
+      "facebook": "https://www.facebook.com/reel/4514398715506842/"
+    }
+  },
+  {
+    "id": "EP-03",
+    "title": "أعواد الكبريت",
+    "published": "2026-10-06",
+    "status": "published",
+    "cover": "card-ep03.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/nYIsFNSo_0Q",
+      "instagram": "https://www.instagram.com/reel/DeKlPBANhsk/",
+      "facebook": "https://www.facebook.com/reel/1591157662474745/"
+    }
+  },
+  {
+    "id": "EP-04",
+    "title": "البنسلين",
+    "published": "2026-10-08",
+    "status": "published",
+    "year": "1928",
+    "cover": "card-google-ep04.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/d1I6QSU0I_c",
+      "instagram": "https://www.instagram.com/reel/DePVFauhpHZ/",
+      "facebook": "https://www.facebook.com/reel/2264055174459453/"
+    }
+  },
+  {
+    "id": "EP-06",
+    "title": "المكيّف",
+    "published": "2026-10-10",
+    "status": "published",
+    "year": "1902",
+    "cover": "card-google-ep06.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/BYf_UJrjTHM",
+      "instagram": "https://www.instagram.com/reel/DeUfwfxFX7j/",
+      "facebook": "https://www.facebook.com/reel/2014673432717626/"
+    }
+  },
+  {
+    "id": "EP-07",
+    "title": "بطاقات الحكم",
+    "published": "2026-10-12",
+    "status": "published",
+    "year": "1970",
+    "cover": "card-ep07-final.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/3D2um3kyAa4",
+      "instagram": "https://www.instagram.com/reel/DeYwYvYDFPM/",
+      "facebook": "https://www.facebook.com/reel/1658314099411331/"
+    }
+  },
+  {
+    "id": "EP-08",
+    "title": "السماعة الطبية",
+    "published": "2026-10-14",
+    "status": "published",
+    "year": "1816",
+    "cover": "card-ep08.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/Krwh85FuD18",
+      "instagram": "https://www.instagram.com/reel/Ded51CeNONn/",
+      "facebook": "https://www.facebook.com/reel/949933704857780/"
+    }
+  },
+  {
+    "id": "EP-10",
+    "title": "المكنسة الكهربائية",
+    "published": "2026-10-24",
+    "status": "published",
+    "cover": "card-ep10.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/QHmnqIVQKto",
+      "instagram": "https://www.instagram.com/reel/De47e8ZDPHm/",
+      "facebook": "https://www.facebook.com/reel/1170429978817207/"
+    }
+  },
+  {
+    "id": "CLOCK-1",
+    "title": "الساعة · الجزء 1: الظل والماء",
+    "series": "الساعة",
+    "part": 1,
+    "published": "2026-10-17",
+    "status": "scheduled",
+    "year": "قبل آلاف السنين",
+    "cover": "card-clock1-v3.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/QRI7yqFJESo",
+      "instagram": "https://www.instagram.com/reel/DemYXryDSG3/",
+      "facebook": "https://www.facebook.com/reel/28579849935016892/"
+    }
+  },
+  {
+    "id": "CLOCK-2",
+    "title": "الساعة · الجزء 2",
+    "series": "الساعة",
+    "part": 2,
+    "published": "2026-10-19",
+    "status": "published",
+    "cover": "card-clock2.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/WFPuGiCEqwM",
+      "facebook": "https://www.facebook.com/reel/1835672714234602",
+      "instagram": "https://www.instagram.com/asl.alhekaya_tv/reel/Deq9KFolF-b/"
+    }
+  },
+  {
+    "id": "CLOCK-3",
+    "title": "الساعة · الجزء 3: لم تُصنع للرجال في البداية",
+    "series": "الساعة",
+    "part": 3,
+    "published": "2026-10-21",
+    "status": "published",
+    "cover": "card-clock3.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/ylKsq-vxJ4c",
+      "instagram": "https://www.instagram.com/reel/DexAGC1DTti/",
+      "facebook": "https://www.facebook.com/reel/4396235464040562/"
+    }
+  },
+  {
+    "id": "EP-11",
+    "title": "النقود الورقية",
+    "series": null,
+    "part": null,
+    "published": "2026-10-26",
+    "status": "published",
+    "cover": "card-ep11-n12.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/ciP0V4cjH_g"
+    }
+  },
+  {
+    "id": "EP-12",
+    "title": "خيول تحت الغطاء",
+    "series": null,
+    "part": null,
+    "published": "2026-10-28",
+    "status": "published",
+    "cover": "card-ep12.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/pvs9-6oGDSY",
+      "tiktok": "https://www.tiktok.com/@asl.alhekaya_tv/video/7701797413849304340"
+    }
+  }
+]
