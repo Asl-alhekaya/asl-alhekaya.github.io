@@ -300,8 +300,8 @@ function creditsCard(cr) {
   if (pc.eleven_left !== undefined) {
     row('إلفن لابز (الصوت) الباقي', num(pc.eleven_left) + (pc.eleven_limit ? ' من ' + num(pc.eleven_limit) : ''));
   }
-  c.appendChild(el('div', 'mt', pc.at ? 'أرقام الكمبيوتر من آخر مسودة: ' + pc.at.substring(0, 16).replace('T', ' ') :
-    'أرقام قوقل وإلفن لابز تظهر بعد أول مسودة من الكمبيوتر.'));
+  c.appendChild(el('div', 'mt', pc.at ? 'أرقام قوقل وإلفن لابز من آخر مسودة: ' + pc.at.substring(0, 16).replace('T', ' ') :
+    'أرقام قوقل وإلفن لابز تظهر بعد أول مسودة.'));
   return c;
 }
 
@@ -312,18 +312,20 @@ function confirmThen(text, fn) {
   else if (window.confirm(text)) fn();
 }
 
+// The bot says who works now (w.place, w.link_line: «السحابة» while RUNNER=CLOUD); an older bot sends neither = the PC lines.
 function workerCard(w) {
   var c = el('div', 'card');
-  c.appendChild(el('h2', '', 'العامل (الكمبيوتر)'));
+  var place = (w && w.place) || 'الكمبيوتر', cloud = place === 'السحابة';
+  c.appendChild(el('h2', '', 'العامل (' + place + ')'));
   if (!w || !w.ok) { c.appendChild(el('p', 'empty', 'ما قدرت أقرا حالة العامل.')); return c; }
   var pc = w.pc || {};
   c.appendChild(el('div', 'state ' + (w.enabled ? 'on' : 'off'), w.enabled ? '▶️ شغّال' : '⏸️ واقف'));
-  c.appendChild(el('div', 'mt', pc.online ? '🟢 الكمبيوتر متصل (قبل ' + pc.seen_min + ' د)' :
+  c.appendChild(el('div', 'mt', w.link_line ? w.link_line : pc.online ? '🟢 الكمبيوتر متصل (قبل ' + pc.seen_min + ' د)' :
     (pc.seen_min === null ? '🔴 الكمبيوتر ما اتصل للحين' : '🔴 الكمبيوتر طافي (آخر مرة قبل ' + pc.seen_min + ' د)')));
   var sw = el('button', 'act big-btn', w.enabled ? '⏸️ وقّف العامل' : '▶️ شغّل العامل');
   sw.onclick = function () {
     confirmThen(w.enabled ? 'توقف العامل؟ الحلقة الشغالة الحين تكمل، والجديد ما يبدأ.' :
-      'تشغّل العامل؟ الكمبيوتر بياخذ الحلقات اللي بالطابور ويصرف من الرصيد حسب السقف.', function () {
+      'تشغّل العامل؟ ' + (cloud ? 'السحابة بتاخذ' : 'الكمبيوتر بياخذ') + ' الحلقات اللي بالطابور ويصرف من الرصيد حسب السقف.', function () {
       sw.disabled = true;
       api('setWorker', { on: !w.enabled }).then(function (r) {
         toast(r.ok ? (r.enabled ? 'العامل شغّال' : 'العامل واقف') : 'ما تغيّر، جرّب مرة ثانية');
@@ -342,7 +344,7 @@ function workerCard(w) {
     meta.push('آخر تحديث قبل ' + j.minutes + ' د');
     c.appendChild(el('div', 'mt', meta.join(' · ')));
   } else {
-    c.appendChild(el('div', 'mt', 'ما فيه حلقة عند الكمبيوتر الحين.'));
+    c.appendChild(el('div', 'mt', 'ما فيه حلقة شغالة الحين.'));
   }
   if (w.last_stop) {
     c.appendChild(el('div', 'mt warn', 'آخر توقف: ' + (w.last_stop.episode || '') + ' — ' + w.last_stop.text +
@@ -358,12 +360,13 @@ function workerCard(w) {
   };
   c.appendChild(gate);
   var caps = w.caps || {};
-  c.appendChild(el('label', '', 'سقف الشهر بالدولار (0 = يوقف الصرف، فاضي = سقف الكمبيوتر ' + caps.max + ')'));
+  var dflt = function (n) { return n === undefined ? 'سقف الكمبيوتر' : 'الافتراضي ' + n; };  // an older bot sends no default
+  c.appendChild(el('label', '', 'سقف الشهر بالدولار (0 = يوقف الصرف، فاضي = ' + dflt(caps.default_month) + '، الأعلى ' + caps.max + ')'));
   var month = el('input');
   month.inputMode = 'decimal';
   month.value = caps.month === null || caps.month === undefined ? '' : String(caps.month);
   c.appendChild(month);
-  c.appendChild(el('label', '', 'سقف اليوم بالدولار (0 = يوقف الصرف، فاضي = سقف الكمبيوتر)'));
+  c.appendChild(el('label', '', 'سقف اليوم بالدولار (0 = يوقف الصرف، فاضي = ' + dflt(caps.default_day) + ')'));
   var day = el('input');
   day.inputMode = 'decimal';
   day.value = caps.day === null || caps.day === undefined ? '' : String(caps.day);
