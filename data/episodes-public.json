@@ -166,5 +166,15 @@
       "youtube": "https://youtube.com/shorts/pvs9-6oGDSY",
       "tiktok": "https://www.tiktok.com/@asl.alhekaya_tv/video/7701797413849304340"
     }
+  },
+  {
+    "id": "EP-13",
+    "title": "نقاط برايل",
+    "status": "pending",
+    "published": "2026-11-01",
+    "cover": "",
+    "links": {
+      "youtube": "https://youtube.com/shorts/BgieUoicgt8"
+    }
   }
 ]
