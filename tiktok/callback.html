@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#10131d">
   <title>TikTok connection | Asl Alhekaya</title>
   <link rel="stylesheet" href="style.css">
@@ -14,6 +15,7 @@
     <div class="eyebrow">Asl Alhekaya · أصل الحكاية</div>
     <h1>TikTok connection</h1>
     <p id="msg" role="status">Checking the answer from TikTok…</p>
+    <button id="retry" hidden>Try again</button>
 
     <div class="card" id="who" hidden>
       <h2>Connected account</h2>
@@ -23,7 +25,7 @@
     <div class="card" id="draft" hidden>
       <h2>Send a video to the TikTok inbox as a draft</h2>
       <p>This is the video that will be sent. It goes to the connected account's TikTok inbox as a <b>draft</b>; the owner reviews and publishes it inside the TikTok app.</p>
-      <video src="demo.mp4" controls playsinline preload="metadata"></video>
+      <video src="demo.mp4" controls playsinline preload="none"></video>
       <button id="send">Upload as TikTok draft</button>
       <p id="state" role="status"></p>
     </div>
@@ -65,14 +67,25 @@
         }).catch(function () { say(stateEl, 'Could not reach the bot.', 'bad'); send.disabled = false; });
       });
 
-      call({ route: 'tiktok.exchange', code: code, state: state }).then(function (r) {
-        if (!r || !r.ok) { fail((r && r.error) || 'The connection was refused.'); return; }
-        session = r.session;
-        say(msg, 'Connected.', 'ok');
-        document.getElementById('name').textContent = r.display_name || 'TikTok account';
-        if (/^https:\/\//.test(r.avatar_url || '')) document.getElementById('avatar').src = r.avatar_url;
-        show('who', true); show('draft', true);
-      }).catch(function () { fail('Could not reach the bot. Try again.'); });
+      var retry = document.getElementById('retry');
+      function exchange() {
+        retry.hidden = true; say(msg, 'Checking the answer from TikTok…', '');
+        call({ route: 'tiktok.exchange', code: code, state: state }).then(function (r) {
+          if (!r || !r.ok) {
+            fail((r && r.error) || 'The connection was refused.');
+            if (r && r.error === 'busy') retry.hidden = false;  // the one-time code is not used up yet: the same request can be sent again
+            return;
+          }
+          code = state = '';
+          session = r.session;
+          say(msg, 'Connected.', 'ok');
+          document.getElementById('name').textContent = r.display_name || 'TikTok account';
+          if (/^https:\/\//.test(r.avatar_url || '')) document.getElementById('avatar').src = r.avatar_url;
+          show('who', true); show('draft', true);
+        }).catch(function () { fail('Could not reach the bot.'); retry.hidden = false; });
+      }
+      retry.addEventListener('click', exchange);
+      exchange();
     })();
   </script>
 </body>
