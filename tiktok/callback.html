@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#10131d">
+  <title>TikTok connection | Asl Alhekaya</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header><nav class="container"><a href="./">← Back</a><a href="../privacy.html">Privacy</a></nav></header>
+  <main class="container">
+    <div class="eyebrow">Asl Alhekaya · أصل الحكاية</div>
+    <h1>TikTok connection</h1>
+    <p id="msg" role="status">Checking the answer from TikTok…</p>
+
+    <div class="card" id="who" hidden>
+      <h2>Connected account</h2>
+      <div class="who"><img id="avatar" alt="" width="56" height="56"><b id="name"></b></div>
+    </div>
+
+    <div class="card" id="draft" hidden>
+      <h2>Send a video to the TikTok inbox as a draft</h2>
+      <p>This is the video that will be sent. It goes to the connected account's TikTok inbox as a <b>draft</b>; the owner reviews and publishes it inside the TikTok app.</p>
+      <video src="demo.mp4" controls playsinline preload="metadata"></video>
+      <button id="send">Upload as TikTok draft</button>
+      <p id="state" role="status"></p>
+    </div>
+  </main>
+  <footer><div class="container">© 2026 Asl Alhekaya</div></footer>
+  <script src="config.js"></script>
+  <script>
+    (function () {
+      var C = window.ASL_TIKTOK, q = new URLSearchParams(location.search), msg = document.getElementById('msg');
+      var session = '';
+      function show(el, on) { document.getElementById(el).hidden = !on; }
+      function say(node, text, cls) { node.textContent = text; node.className = cls || ''; }
+      function call(body) {  // text/plain keeps this a simple request (no preflight) for the Apps Script web app
+        return fetch(C.bot, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+      }
+      function fail(text) { say(msg, text, 'bad'); }
+      // Take the one-time code out of the address bar and the history right away.
+      var code = q.get('code'), state = q.get('state'), err = q.get('error');
+      history.replaceState(null, '', location.pathname);
+      if (err) { fail('TikTok did not authorize the connection (' + err + ').'); return; }
+      if (!code || !state) { fail('No answer from TikTok on this page. Start again from the connect page.'); return; }
+
+      var stateEl = document.getElementById('state'), send = document.getElementById('send');
+      function poll(id, n) {
+        call({ route: 'tiktok.status', session: session, publish_id: id }).then(function (r) {
+          if (!r || !r.ok) { say(stateEl, (r && r.error) || 'Status unknown.', 'bad'); send.disabled = false; return; }
+          if (r.status === 'SEND_TO_USER_INBOX') { say(stateEl, 'Done: the draft is in your TikTok inbox. Open the TikTok app to review and publish it.', 'ok'); return; }
+          if (r.status === 'FAILED') { say(stateEl, 'TikTok could not take the video' + (r.fail_reason ? ' (' + r.fail_reason + ')' : '') + '.', 'bad'); send.disabled = false; return; }
+          if (n > 40) { say(stateEl, 'Still processing: check the TikTok inbox in a minute.', ''); return; }
+          say(stateEl, 'TikTok is processing the video… (' + r.status + ')', '');
+          setTimeout(function () { poll(id, n + 1); }, 3000);
+        }).catch(function () { say(stateEl, 'Could not reach the bot.', 'bad'); send.disabled = false; });
+      }
+      send.addEventListener('click', function () {
+        send.disabled = true; say(stateEl, 'Sending the video to TikTok…', '');
+        call({ route: 'tiktok.draft', session: session }).then(function (r) {
+          if (!r || !r.ok) { say(stateEl, (r && r.error) || 'The upload was refused.', 'bad'); send.disabled = false; return; }
+          poll(r.publish_id, 0);
+        }).catch(function () { say(stateEl, 'Could not reach the bot.', 'bad'); send.disabled = false; });
+      });
+
+      call({ route: 'tiktok.exchange', code: code, state: state }).then(function (r) {
+        if (!r || !r.ok) { fail((r && r.error) || 'The connection was refused.'); return; }
+        session = r.session;
+        say(msg, 'Connected.', 'ok');
+        document.getElementById('name').textContent = r.display_name || 'TikTok account';
+        if (/^https:\/\//.test(r.avatar_url || '')) document.getElementById('avatar').src = r.avatar_url;
+        show('who', true); show('draft', true);
+      }).catch(function () { fail('Could not reach the bot. Try again.'); });
+    })();
+  </script>
+</body>
+</html>

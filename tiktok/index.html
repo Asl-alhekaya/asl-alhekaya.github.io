@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#10131d">
+  <title>Connect TikTok | Asl Alhekaya</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header><nav class="container"><a href="../">← Asl Alhekaya (أصل الحكاية)</a><a href="../privacy.html">Privacy</a></nav></header>
+  <main class="container">
+    <div class="eyebrow">Asl Alhekaya · أصل الحكاية</div>
+    <h1>Connect the channel's TikTok account</h1>
+    <p>This page is used by the channel owner only. It connects the channel's own TikTok account so that a finished episode video can be sent to that account's TikTok inbox <b>as a draft</b>. The owner reviews and publishes it inside the TikTok app. Nothing is ever posted automatically, and no other person's account is connected.</p>
+
+    <div class="card">
+      <h2>1 · Connect code</h2>
+      <p>The channel owner asks the channel's private bot for a one-time code (valid 10 minutes) and types it here. Without a valid code the connection is refused.</p>
+      <label for="code">Connect code</label>
+      <input id="code" maxlength="10" autocomplete="off" spellcheck="false" placeholder="XXXXXXXXXX" inputmode="latin">
+      <button class="tt" id="go" disabled>Continue with TikTok</button>
+      <p id="msg" role="status"></p>
+    </div>
+
+    <div class="card">
+      <h2>What the app asks TikTok for</h2>
+      <ul>
+        <li><b>user.info.basic</b> — shows the connected account's name and picture on this page.</li>
+        <li><b>video.upload</b> — sends a video to the connected account's inbox as a draft.</li>
+      </ul>
+      <p>See the <a href="../privacy.html">privacy policy</a> and the <a href="../terms.html">terms</a>.</p>
+    </div>
+  </main>
+  <footer><div class="container">© 2026 Asl Alhekaya</div></footer>
+  <script src="config.js"></script>
+  <script>
+    (function () {
+      var C = window.ASL_TIKTOK, input = document.getElementById('code'), go = document.getElementById('go'), msg = document.getElementById('msg');
+      function clean(v) { return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+      input.addEventListener('input', function () { input.value = clean(input.value); go.disabled = input.value.length !== 10; });
+      go.addEventListener('click', function () {
+        var code = clean(input.value);
+        if (code.length !== 10) { msg.textContent = 'The code has 10 letters and digits.'; return; }
+        var url = 'https://www.tiktok.com/v2/auth/authorize/?client_key=' + encodeURIComponent(C.clientKey) +
+          '&scope=' + encodeURIComponent(C.scope) + '&response_type=code&redirect_uri=' + encodeURIComponent(C.redirectUri) +
+          '&state=' + encodeURIComponent(code);
+        window.location.assign(url);
+      });
+    })();
+  </script>
+</body>
+</html>
