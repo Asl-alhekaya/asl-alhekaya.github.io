@@ -172,9 +172,19 @@
     "title": "نقاط برايل",
     "status": "published",
     "published": "2026-11-01",
-    "cover": "",
+    "cover": "card-ep13.png",
     "links": {
       "youtube": "https://youtube.com/shorts/BgieUoicgt8"
+    }
+  },
+  {
+    "id": "EP-16",
+    "title": "مال الصخور المتطايرة",
+    "status": "published",
+    "published": "2026-11-02",
+    "cover": "card-ep16.png",
+    "links": {
+      "youtube": "https://youtu.be/DGd7j4nPJto"
     }
   }
 ]
