@@ -46,7 +46,7 @@
         if (code.length !== 10) { msg.textContent = 'The code has 10 letters and digits.'; return; }
         var url = 'https://www.tiktok.com/v2/auth/authorize/?client_key=' + encodeURIComponent(C.clientKey) +
           '&scope=' + encodeURIComponent(C.scope) + '&response_type=code&redirect_uri=' + encodeURIComponent(C.redirectUri) +
-          '&state=' + encodeURIComponent(code);
+          '&state=' + encodeURIComponent(code) + '&disable_auto_auth=1';  // always show TikTok's consent screen
         window.location.assign(url);
       });
     })();
