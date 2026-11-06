@@ -186,5 +186,25 @@
     "links": {
       "youtube": "https://youtu.be/DGd7j4nPJto"
     }
+  },
+  {
+    "id": "EP-18",
+    "title": "الرادار",
+    "status": "published",
+    "published": "2026-11-04",
+    "cover": "card-ep18.png",
+    "links": {
+      "youtube": "https://youtu.be/Iq4B_9UR4tc"
+    }
+  },
+  {
+    "id": "EP-19",
+    "title": "كيس الشاي",
+    "status": "published",
+    "published": "2026-11-06",
+    "cover": "card-ep19.png",
+    "links": {
+      "youtube": "https://youtu.be/D1qaRt3w5ZI"
+    }
   }
 ]
