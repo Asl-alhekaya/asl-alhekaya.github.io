@@ -41,8 +41,24 @@ LINKS = {
 }
 E = html.escape
 BASE = "https://asl-alhekaya.github.io/"
-LOGO = Path(os.environ.get("ASL_SITE_LOGO") or ASL / "studio" / "render" / "public" / "ep08" / "logo-round.png")
+# identity v4 (DECISION-076): the round logo of the cover kit (tracked and shipped to the cloud; the old ep08 file was local only)
+LOGO = Path(os.environ.get("ASL_SITE_LOGO") or ASL / "studio" / "render" / "public" / "cover-kit" / "sisters" / "logo.png")
 ALT = {"instagram": "إنستغرام", "facebook": "فيسبوك"}
+
+# ---- Links hub (links.html = the ONE link in the Instagram bio, owner 2026-11-07). Every value to edit later is here. ----
+HUB_ACCOUNTS = (
+    ("youtube", "يوتيوب", LINKS["youtube"][1]),
+    ("instagram", "إنستغرام", LINKS["instagram"][1]),
+    ("tiktok", "تيك توك", LINKS["tiktok"][1]),
+    ("facebook", "فيسبوك", LINKS["facebook"][1]),
+    ("threads", "ثريدز", "https://www.threads.com/@asl.alhekaya_tv"),
+)
+DM_URL = "https://ig.me/m/asl.alhekaya_tv"  # opens a direct message to the Instagram account
+SUGGEST_URL = DM_URL  # «اقترح حكاية»: later a Google Form link (one-line change)
+CONTACT_EMAIL = "aslalhekaya.tv@gmail.com"  # «تواصل معنا»: the official email (owner 2026-11-07); empty = no mail button, Instagram DM only
+CONTACT_NOTE = ""  # optional line under the contact title; empty = the default line (no words about ads, sponsorship or prices: owner 2026-11-07)
+START_HERE = ("EP-19", "EP-18", "EP-16", "EP-13")  # «ابدأ من هنا»: preferred episode ids, first three that are public and not the featured latest
+OG_IMAGE = "assets/og-links.jpg"  # 1200x630 card made by studio/site/make_og.py
 
 
 def cover(ep):
@@ -81,7 +97,7 @@ def icons():
 def static_files(today):
     """robots.txt, sitemap.xml and a small 404 page: what search engines and wrong links need."""
     (SITE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {BASE}sitemap.xml\n", encoding="utf-8")
-    urls = "".join(f"<url><loc>{BASE}{u}</loc><lastmod>{today}</lastmod></url>" for u in ("", "privacy.html", "terms.html"))
+    urls = "".join(f"<url><loc>{BASE}{u}</loc><lastmod>{today}</lastmod></url>" for u in ("", "links.html", "privacy.html", "terms.html"))
     (SITE / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>'
                                       f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n', encoding="utf-8")
     (SITE / "404.html").write_text("""<!doctype html>
@@ -91,6 +107,110 @@ def static_files(today):
 a{color:#F2C14E;font-weight:700}</style></head>
 <body><main><h1>هذي الصفحة ما لقيناها</h1><p>رجع للصفحة الرئيسية وشوف الحكايات.</p><p><a href="/">أصل الحكاية</a></p></main></body></html>
 """, encoding="utf-8")
+
+
+def render_links(eps, imgs):
+    """links.html: the phone-first hub for the Instagram bio. Same public data and same strict CSP as index.html (no
+    JavaScript, no trackers). A pure function of the episodes + the constants above, so a rebuild changes nothing by itself."""
+    by_id = {e["id"]: e for e in eps}
+    latest = eps[0]
+
+    def yt(e):
+        return e.get("links", {}).get("youtube", LINKS["youtube"][1])
+
+    def pic(e):
+        img = imgs.get(e["id"])
+        return f'<img src="{img}" alt="غلاف {E(e["title"])}" loading="lazy" width="540" height="960">' if img else ""
+
+    start = [by_id[i] for i in START_HERE if i in by_id and i != latest["id"]][:3]  # the latest has its own card
+    start_html = ""
+    if start:
+        cards = "".join(f'<a class="mini" href="{yt(e)}" rel="noopener" target="_blank">{pic(e)}<span>{E(e["title"])}</span></a>'
+                        for e in start)
+        start_html = ('<section class="card" aria-labelledby="h-start"><h2 id="h-start">ابدأ من هنا</h2>'
+                      f'<p class="sub">جديد على القناة؟ هذي ثلاث حكايات تعرّفك عليها.</p><div class="trio">{cards}</div></section>')
+    accounts = "".join(f'<a class="acct" href="{u}" rel="noopener" target="_blank">{n}</a>' for _, n, u in HUB_ACCOUNTS)
+    note = E(CONTACT_NOTE) if CONTACT_NOTE else "لأي سؤال أو ملاحظة، راسلنا على الإيميل أو على إنستغرام."
+    mail = f'<a class="btn ghost wide" href="mailto:{E(CONTACT_EMAIL)}">{E(CONTACT_EMAIL)}</a>' if CONTACT_EMAIL else ""
+    image = BASE + OG_IMAGE
+    desc = "كل روابط أصل الحكاية في مكان واحد: حسابات القناة، آخر حلقة، وكل الحكايات."
+    return f"""<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#0B1416">
+<title>أصل الحكاية | كل الروابط</title>
+<meta name="description" content="{desc}">
+<link rel="canonical" href="{BASE}links.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ar_AR">
+<meta property="og:site_name" content="أصل الحكاية">
+<meta property="og:url" content="{BASE}links.html">
+<meta property="og:title" content="أصل الحكاية | كل شيء له بداية">
+<meta property="og:description" content="{desc}">
+<meta property="og:image" content="{image}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="أصل الحكاية: كتاب أصفر صغير وعبارة كل شيء له بداية">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="أصل الحكاية | كل شيء له بداية">
+<meta name="twitter:description" content="{desc}">
+<meta name="twitter:image" content="{image}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Reem+Kufi:wght@600;700&display=swap">
+<style>
+:root{{--bg:#0B1416;--card:#13232A;--ink:#EEF3F2;--cream:#F6EBCB;--muted:#A7BABD;--gold:#F2C14E;--teal:#1E5463;--line:#2A4753}}
+*{{box-sizing:border-box}}
+body{{margin:0;min-height:100vh;background:radial-gradient(130% 60% at 50% 0%,var(--teal) 0%,transparent 70%),var(--bg);color:var(--ink);font-family:"Almarai",Tahoma,sans-serif;line-height:1.7}}
+a{{color:inherit}}
+main{{max-width:480px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));display:grid;gap:14px}}
+h1,h2{{font-family:"Reem Kufi","Almarai",sans-serif;text-wrap:balance;margin:0}}
+.top{{text-align:center}}
+.top img{{width:96px;height:96px;border-radius:50%;box-shadow:0 0 0 3px var(--gold),0 14px 30px rgba(0,0,0,.5)}}
+.top h1{{color:var(--cream);font-size:34px;margin-top:10px;line-height:1.3}}
+.top p{{color:var(--muted);margin:2px 0 0}}
+.card{{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}}
+.card h2{{color:var(--gold);font-size:21px}}
+.sub{{color:var(--muted);font-size:14px;margin:2px 0 12px}}
+.tag{{display:inline-block;background:var(--gold);color:#1A1405;font-weight:800;border-radius:6px;padding:0 10px;font-size:13px}}
+.latest{{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center}}
+.latest img{{width:96px;height:auto;aspect-ratio:9/16;object-fit:cover;border-radius:12px;display:block;background:#0B1416}}
+.latest h2{{color:var(--cream);margin:6px 0 10px;font-size:22px;line-height:1.4}}
+.btn{{display:inline-flex;align-items:center;justify-content:center;min-height:48px;background:var(--gold);color:#1A1405;padding:8px 18px;border-radius:12px;font-weight:800;text-decoration:none;text-align:center}}
+.btn.ghost{{background:transparent;color:var(--ink);border:1px solid #3A5560}}
+.btn.wide{{display:flex;width:100%}}
+.trio{{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}}
+.mini{{position:relative;display:block;border-radius:12px;overflow:hidden;background:#0B1416;text-decoration:none}}
+.mini img{{width:100%;height:auto;aspect-ratio:9/16;object-fit:cover;display:block}}
+.mini span{{position:absolute;inset:auto 0 0 0;padding:22px 6px 6px;background:linear-gradient(transparent,rgba(0,0,0,.9));font-size:13px;font-weight:800;line-height:1.35}}
+.accts{{display:grid;grid-template-columns:1fr 1fr;gap:10px}}
+.acct{{display:flex;align-items:center;justify-content:center;min-height:52px;border:1px solid #3A5560;border-radius:14px;font-weight:800;text-decoration:none;background:rgba(255,255,255,.03)}}
+.acct:first-child{{grid-column:1/-1;background:var(--gold);border-color:var(--gold);color:#1A1405}}
+.stack{{display:grid;gap:10px}}
+a:focus-visible{{outline:3px solid var(--gold);outline-offset:3px}}
+a.btn:hover,a.acct:hover,a.mini:hover{{filter:brightness(1.1)}}
+footer{{text-align:center;color:var(--muted);font-size:13px;padding-top:6px}}
+footer a{{color:var(--muted)}}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><img src="assets/apple-touch-icon.png" alt="شعار أصل الحكاية" width="180" height="180"><h1>أصل الحكاية</h1><p>كل شيء له بداية</p></div>
+<section class="card" aria-label="آخر حلقة"><div class="latest">{pic(latest)}<div><span class="tag">الأحدث</span><h2>{E(latest["title"])}</h2><a class="btn" href="{yt(latest)}" rel="noopener" target="_blank">شاهد الحلقة</a></div></div></section>
+{start_html}
+<a class="btn wide" href="./#all">كل الحلقات ({len(eps)})</a>
+<section class="card" aria-labelledby="h-follow"><h2 id="h-follow">تابعنا</h2><p class="sub">نفس الحكايات على كل المنصات.</p><div class="accts">{accounts}</div></section>
+<section class="card" aria-labelledby="h-suggest"><h2 id="h-suggest">اقترح حكاية</h2><p class="sub">وش الشيء اللي تبي نعرف أصله؟ اكتب لنا اسمه.</p><a class="btn wide" href="{SUGGEST_URL}" rel="noopener" target="_blank">أرسل اقتراحك</a></section>
+<section class="card" aria-labelledby="h-biz"><h2 id="h-biz">تواصل معنا</h2><p class="sub">{note}</p><div class="stack"><a class="btn wide" href="{DM_URL}" rel="noopener" target="_blank">راسلنا على إنستغرام</a>{mail}</div></section>
+<footer><a href="./">الموقع</a> · <a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">شروط الاستخدام</a><br>© 2026 أصل الحكاية</footer>
+</main>
+</body>
+</html>
+"""
 
 
 def main():
@@ -198,9 +318,10 @@ footer a{{color:var(--muted)}}
 </html>
 """
     (SITE / "index.html").write_text(page, encoding="utf-8")
+    (SITE / "links.html").write_text(render_links(eps, imgs), encoding="utf-8")
     icons()
     static_files(today)
-    print(f"index.html: {len(eps)} episodes, latest «{latest['title']}», covers {sum(1 for v in imgs.values() if v)}")
+    print(f"index.html + links.html: {len(eps)} episodes, latest «{latest['title']}», covers {sum(1 for v in imgs.values() if v)}")
 
 
 if __name__ == "__main__":
