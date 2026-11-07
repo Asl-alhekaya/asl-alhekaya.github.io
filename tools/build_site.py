@@ -2,7 +2,8 @@
 
 Public only: titles, dates, covers and platform links from studio/brain/episodes-public.json (brain.py export).
 Never scripts, prompts, costs or anything private: those stay in the private studio, never in this public repo.
-Static HTML, no JavaScript, no trackers, a strict Content-Security-Policy; GitHub Pages serves it.
+Static HTML, a strict Content-Security-Policy; GitHub Pages serves it. The only script is the optional cookie-less visitor
+counter (Cloudflare Web Analytics, ANALYTICS_TOKEN below): no cookies, no ads, no personal profile; empty token = no script at all.
 Usage: python build_site.py [SITE_DIR] [--promote]   (default C:\\Claude Code\\asl-alhikaya-site)
 Then review, and push only with the owner's yes (a public change).
 
@@ -20,6 +21,7 @@ episode never shows on the site.
 import html
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -54,11 +56,35 @@ HUB_ACCOUNTS = (
     ("threads", "ثريدز", "https://www.threads.com/@asl.alhekaya_tv"),
 )
 DM_URL = "https://ig.me/m/asl.alhekaya_tv"  # opens a direct message to the Instagram account
-SUGGEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSedk0L4NDfFcKsEDVEF9TqHzi3TysLcbzONCDBg_SR7AdgwMQ/viewform"  # «اقترح حكاية»: Google Form "اقترح حكاية - أصل الحكاية" (owner's channel Google account, anyone with the link, no sign-in, one required paragraph question); answers are in its «الردود» tab; fall back to DM_URL if it is ever deleted
+SUGGEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSedk0L4NDfFcKsEDVEF9TqHzi3TysLcbzONCDBg_SR7AdgwMQ/viewform"  # «اقترح حكاية»: Google Form "اقترح حكاية - أصل الحكاية" (owner's channel Google account, anyone with the link, no sign-in, one required paragraph question); answers go to the Sheet «اقتراحات الحكايات - أصل الحكاية» (studio/suggestions/suggestions.py reads the new ones); fall back to DM_URL if it is ever deleted
 CONTACT_EMAIL = "aslalhekaya.tv@gmail.com"  # «تواصل معنا»: the official email (owner 2026-11-07); empty = no mail button, Instagram DM only
 CONTACT_NOTE = ""  # optional line under the contact title; empty = the default line (no words about ads, sponsorship or prices: owner 2026-11-07)
 START_HERE = ("EP-19", "EP-18", "EP-16", "EP-13")  # «ابدأ من هنا»: preferred episode ids, first three that are public and not the featured latest
 OG_IMAGE = "assets/og-links.jpg"  # 1200x630 card made by studio/site/make_og.py
+
+# ---- Visitor stats (owner 2026-11-07 «فعل كل شي»): Cloudflare Web Analytics, cookie-less, counts visits only. ----
+# The site token is public by design (it sits in every page's source, it is not a secret). Empty = no counter and the CSP
+# stays script-free. privacy.html (Pages repo, hand-written) section 3 says what is counted; keep the two in step.
+ANALYTICS_TOKEN = ""
+CF_SCRIPT_HOST = "https://static.cloudflareinsights.com"
+CF_REPORT_HOST = "https://cloudflareinsights.com"
+
+
+def csp():
+    """The pages' Content-Security-Policy: nothing external except Google Fonts, plus the counter's two hosts when it is on."""
+    counter = f" script-src {CF_SCRIPT_HOST}; connect-src {CF_REPORT_HOST};" if ANALYTICS_TOKEN else ""
+    return ("default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            f"font-src https://fonts.gstatic.com;{counter} base-uri 'none'; form-action 'none'")
+
+
+def beacon():
+    """The one counter tag (deferred, no cookies), or nothing when ANALYTICS_TOKEN is empty."""
+    if not ANALYTICS_TOKEN:
+        return ""
+    if not re.fullmatch(r"[0-9a-f]{32}", ANALYTICS_TOKEN):
+        raise SystemExit("ANALYTICS_TOKEN must be the 32-character Cloudflare Web Analytics site token")
+    return (f'<script defer src="{CF_SCRIPT_HOST}/beacon.min.js" '
+            f"data-cf-beacon='{{\"token\": \"{ANALYTICS_TOKEN}\"}}'></script>\n")
 
 
 def cover(ep):
@@ -174,7 +200,7 @@ def render_links(eps, imgs, root=""):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="{csp()}">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#0B1416">
 <title>أصل الحكاية | كل الروابط</title>
@@ -245,7 +271,7 @@ footer a{{color:var(--muted)}}
 <section class="card" aria-labelledby="h-biz"><h2 id="h-biz">تواصل معنا</h2><p class="sub">{note}</p><div class="stack">{contact_buttons()}</div></section>
 <footer><a href="{home}">الموقع</a> · <a href="{root}privacy.html">سياسة الخصوصية</a> · <a href="{root}terms.html">شروط الاستخدام</a><br>© 2026 أصل الحكاية</footer>
 </main>
-</body>
+{beacon()}</body>
 </html>
 """
 
@@ -281,7 +307,7 @@ def main():
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="{csp()}">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>أصل الحكاية | كل شيء له بداية</title>
 <meta name="description" content="قصص قصيرة عن البدايات: كيف بدأت الاختراعات والاكتشافات التي نستخدمها كل يوم. فيديوهات قصيرة بالعربية الفصحى.">
@@ -364,7 +390,7 @@ footer a{{color:var(--muted)}}
 </main>
 <footer><span>© 2026 أصل الحكاية</span><span><a href="links.html">كل الروابط</a> · <a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">شروط الاستخدام</a></span></footer>
 </div>
-</body>
+{beacon()}</body>
 </html>
 """
     (SITE / "index.html").write_text(page, encoding="utf-8")
