@@ -465,7 +465,10 @@ function switchRow(label, hint, on, action) {
   b.setAttribute('aria-label', label);
   b.onclick = function () {
     tap();
-    write(action, { on: !on }, !on ? 'تشغّل' : 'انطفى', b, { loose: true });
+    var go = function () { write(action, { on: !on }, !on ? 'تشغّل' : 'انطفى', b, { loose: true }); };
+    // audit F6 (2026-11-07): switching the voice gate OFF lets the next episode spend without his ear first: ask once
+    if (on && action === 'setVoiceGate') confirmThen('تطفي «اسمع الصوت قبل الصرف»؟ الحلقة الجاية بتكمل للصور والمقاطع بدون ما توقف لك.', go);
+    else go();
   };
   return add(r, txt, b);
 }
