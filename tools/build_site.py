@@ -65,7 +65,7 @@ OG_IMAGE = "assets/og-links.jpg"  # 1200x630 card made by studio/site/make_og.py
 # ---- Visitor stats (owner 2026-11-07 «فعل كل شي»): Cloudflare Web Analytics, cookie-less, counts visits only. ----
 # The site token is public by design (it sits in every page's source, it is not a secret). Empty = no counter and the CSP
 # stays script-free. privacy.html (Pages repo, hand-written) section 3 says what is counted; keep the two in step.
-ANALYTICS_TOKEN = ""
+ANALYTICS_TOKEN = "c151d936e0444cbea7fa60e3e09dd8c6"  # Cloudflare Web Analytics site asl-alhekaya.github.io (owner account, added 2026-11-07)
 CF_SCRIPT_HOST = "https://static.cloudflareinsights.com"
 CF_REPORT_HOST = "https://cloudflareinsights.com"
 
