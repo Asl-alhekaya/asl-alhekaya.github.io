@@ -3,24 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://telegram.org; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://telegram.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
-<title>لوحة أصل الحكاية</title>
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0B1416">
+<title>الاستوديو · أصل الحكاية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;family=Reem+Kufi:wght@600;700&amp;display=swap">
 <link rel="stylesheet" href="app.css">
 <script src="diag.js"></script>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-<main id="view"><p style="color:#A7BABD;padding:16px">جاري التحميل...</p></main>
-<pre id="diag" hidden style="white-space:pre-wrap;color:#F2C14E;padding:12px;font-size:13px"></pre>
+<header id="top">
+  <div class="brand"><span aria-hidden="true">📖</span> الاستوديو</div>
+  <div class="top-side">
+    <span id="stamp" class="stamp"></span>
+    <button id="refresh" class="icon-btn" type="button" aria-label="حدّث">⟳</button>
+  </div>
+</header>
+<main id="view" tabindex="-1"><p class="loading">جاري التحميل…</p></main>
+<pre id="diag" hidden></pre>
 <div id="toast" role="status" aria-live="polite"></div>
-<nav id="tabs">
-  <button data-tab="home" class="on">الرئيسية</button>
-  <button data-tab="episodes">الحلقات</button>
-  <button data-tab="prod">الإنتاج</button>
-  <button data-tab="queue">الطابور</button>
-  <button data-tab="log">تسجيل</button>
+<div id="sheet" hidden>
+  <div class="sheet-box" role="alertdialog" aria-modal="true" aria-labelledby="sheet-text">
+    <p id="sheet-text"></p>
+    <div class="sheet-btns">
+      <button id="sheet-yes" class="btn primary" type="button">إيه، تمام</button>
+      <button id="sheet-no" class="btn ghost" type="button">لا، رجوع</button>
+    </div>
+  </div>
+</div>
+<nav id="tabs" aria-label="الأقسام">
+  <button type="button" data-tab="job"><span class="ti" aria-hidden="true">🎬</span><span>الحلقة</span></button>
+  <button type="button" data-tab="ideas"><span class="ti" aria-hidden="true">💡</span><span>الأفكار</span></button>
+  <button type="button" data-tab="stats"><span class="ti" aria-hidden="true">📊</span><span>الأرقام</span></button>
+  <button type="button" data-tab="bank"><span class="ti" aria-hidden="true">🏦</span><span>البنك</span></button>
 </nav>
 <script src="app.js"></script>
 </body>
