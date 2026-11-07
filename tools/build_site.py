@@ -54,7 +54,7 @@ HUB_ACCOUNTS = (
     ("threads", "ثريدز", "https://www.threads.com/@asl.alhekaya_tv"),
 )
 DM_URL = "https://ig.me/m/asl.alhekaya_tv"  # opens a direct message to the Instagram account
-SUGGEST_URL = DM_URL  # «اقترح حكاية»: later a Google Form link (one-line change)
+SUGGEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSedk0L4NDfFcKsEDVEF9TqHzi3TysLcbzONCDBg_SR7AdgwMQ/viewform"  # «اقترح حكاية»: Google Form "اقترح حكاية - أصل الحكاية" (owner's channel Google account, anyone with the link, no sign-in, one required paragraph question); answers are in its «الردود» tab; fall back to DM_URL if it is ever deleted
 CONTACT_EMAIL = "aslalhekaya.tv@gmail.com"  # «تواصل معنا»: the official email (owner 2026-11-07); empty = no mail button, Instagram DM only
 CONTACT_NOTE = ""  # optional line under the contact title; empty = the default line (no words about ads, sponsorship or prices: owner 2026-11-07)
 START_HERE = ("EP-19", "EP-18", "EP-16", "EP-13")  # «ابدأ من هنا»: preferred episode ids, first three that are public and not the featured latest
@@ -109,29 +109,64 @@ a{color:#F2C14E;font-weight:700}</style></head>
 """, encoding="utf-8")
 
 
-def render_links(eps, imgs):
+# Simplified outline glyphs (24 px grid, currentColor): inline SVG, so the strict CSP (no external images) is untouched.
+ICONS = {
+    "youtube": '<rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.5v5l4.5-2.5z"/>',
+    "instagram": '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".7"/>',
+    "tiktok": '<path d="M13.5 3v11.2a3.6 3.6 0 1 1-3.6-3.6"/><path d="M13.5 3c.4 2.7 2.2 4.4 5 4.7"/>',
+    "facebook": '<circle cx="12" cy="12" r="9"/><path d="M13.6 20v-8.6"/><path d="M10.6 11.4h5.4"/><path d="M13.6 11.4V9.6c0-1.4.8-2.1 2.3-2.1"/>',
+    "threads": '<circle cx="12" cy="12" r="9"/><path d="M15.7 12.6c0 1.9-1.6 3.1-3.6 3.1s-3.3-1.2-3.3-2.7c0-1.7 1.5-2.6 3.3-2.6s3.5 1 3.5 3"/><path d="M8.9 9.4c.9-1.6 3-2 4.5-1.3 1 .5 1.7 1.4 1.9 2.6"/>',
+}
+
+
+def icon(key):
+    body = ICONS.get(key, "")
+    return (f'<svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
+            f'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{body}</svg>') if body else ""
+
+
+def yt_url(e):
+    return e.get("links", {}).get("youtube", LINKS["youtube"][1])
+
+
+def start_picks(eps):
+    """«ابدأ من هنا»: the first three START_HERE episodes that are public and are not the featured latest."""
+    by_id = {e["id"]: e for e in eps}
+    return [by_id[i] for i in START_HERE if i in by_id and i != eps[0]["id"]][:3]
+
+
+def contact_buttons():
+    """Instagram DM always; the mail button only when CONTACT_EMAIL is set (the one config value)."""
+    mail = f'<a class="btn ghost wide" href="mailto:{E(CONTACT_EMAIL)}">{E(CONTACT_EMAIL)}</a>' if CONTACT_EMAIL else ""
+    return f'<a class="btn wide" href="{DM_URL}" rel="noopener" target="_blank">راسلنا على إنستغرام</a>{mail}'
+
+
+CONTACT_LINE = "لأي سؤال أو ملاحظة، راسلنا على الإيميل أو على إنستغرام."
+
+
+def render_links(eps, imgs, root=""):
     """links.html: the phone-first hub for the Instagram bio. Same public data and same strict CSP as index.html (no
-    JavaScript, no trackers). A pure function of the episodes + the constants above, so a rebuild changes nothing by itself."""
+    JavaScript, no trackers). A pure function of the episodes + the constants above, so a rebuild changes nothing by itself.
+    root = "" for /links.html, "../" for the short copy /l/ (same page, same canonical)."""
     by_id = {e["id"]: e for e in eps}
     latest = eps[0]
 
-    def yt(e):
-        return e.get("links", {}).get("youtube", LINKS["youtube"][1])
+    yt = yt_url
 
     def pic(e):
         img = imgs.get(e["id"])
-        return f'<img src="{img}" alt="غلاف {E(e["title"])}" loading="lazy" width="540" height="960">' if img else ""
+        return f'<img src="{root}{img}" alt="غلاف {E(e["title"])}" loading="lazy" width="540" height="960">' if img else ""
 
-    start = [by_id[i] for i in START_HERE if i in by_id and i != latest["id"]][:3]  # the latest has its own card
+    start = start_picks(eps)  # the latest has its own card
     start_html = ""
     if start:
         cards = "".join(f'<a class="mini" href="{yt(e)}" rel="noopener" target="_blank">{pic(e)}<span>{E(e["title"])}</span></a>'
                         for e in start)
         start_html = ('<section class="card" aria-labelledby="h-start"><h2 id="h-start">ابدأ من هنا</h2>'
                       f'<p class="sub">جديد على القناة؟ هذي ثلاث حكايات تعرّفك عليها.</p><div class="trio">{cards}</div></section>')
-    accounts = "".join(f'<a class="acct" href="{u}" rel="noopener" target="_blank">{n}</a>' for _, n, u in HUB_ACCOUNTS)
-    note = E(CONTACT_NOTE) if CONTACT_NOTE else "لأي سؤال أو ملاحظة، راسلنا على الإيميل أو على إنستغرام."
-    mail = f'<a class="btn ghost wide" href="mailto:{E(CONTACT_EMAIL)}">{E(CONTACT_EMAIL)}</a>' if CONTACT_EMAIL else ""
+    accounts = "".join(f'<a class="acct" href="{u}" rel="noopener" target="_blank">{icon(k)}{n}</a>' for k, n, u in HUB_ACCOUNTS)
+    note = E(CONTACT_NOTE) if CONTACT_NOTE else CONTACT_LINE
+    home = root or "./"
     image = BASE + OG_IMAGE
     desc = "كل روابط أصل الحكاية في مكان واحد: حسابات القناة، آخر حلقة، وكل الحكايات."
     return f"""<!doctype html>
@@ -145,8 +180,8 @@ def render_links(eps, imgs):
 <title>أصل الحكاية | كل الروابط</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{BASE}links.html">
-<link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="{root}assets/favicon.png">
+<link rel="apple-touch-icon" href="{root}assets/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ar_AR">
 <meta property="og:site_name" content="أصل الحكاية">
@@ -188,9 +223,11 @@ h1,h2{{font-family:"Reem Kufi","Almarai",sans-serif;text-wrap:balance;margin:0}}
 .mini img{{width:100%;height:auto;aspect-ratio:9/16;object-fit:cover;display:block}}
 .mini span{{position:absolute;inset:auto 0 0 0;padding:22px 6px 6px;background:linear-gradient(transparent,rgba(0,0,0,.9));font-size:13px;font-weight:800;line-height:1.35}}
 .accts{{display:grid;grid-template-columns:1fr 1fr;gap:10px}}
-.acct{{display:flex;align-items:center;justify-content:center;min-height:52px;border:1px solid #3A5560;border-radius:14px;font-weight:800;text-decoration:none;background:rgba(255,255,255,.03)}}
+.acct{{display:flex;align-items:center;justify-content:center;gap:9px;min-height:52px;border:1px solid #3A5560;border-radius:14px;font-weight:800;text-decoration:none;background:rgba(255,255,255,.03)}}
 .acct:first-child{{grid-column:1/-1;background:var(--gold);border-color:var(--gold);color:#1A1405}}
 .stack{{display:grid;gap:10px}}
+.ico{{flex:none}}
+@media (prefers-reduced-motion:no-preference){{.top img{{animation:float 5s ease-in-out infinite}}@keyframes float{{50%{{transform:translateY(-5px)}}}}}}
 a:focus-visible{{outline:3px solid var(--gold);outline-offset:3px}}
 a.btn:hover,a.acct:hover,a.mini:hover{{filter:brightness(1.1)}}
 footer{{text-align:center;color:var(--muted);font-size:13px;padding-top:6px}}
@@ -199,14 +236,14 @@ footer a{{color:var(--muted)}}
 </head>
 <body>
 <main>
-<div class="top"><img src="assets/apple-touch-icon.png" alt="شعار أصل الحكاية" width="180" height="180"><h1>أصل الحكاية</h1><p>كل شيء له بداية</p></div>
+<div class="top"><img src="{root}assets/apple-touch-icon.png" alt="شعار أصل الحكاية" width="180" height="180"><h1>أصل الحكاية</h1><p>كل شيء له بداية</p></div>
 <section class="card" aria-label="آخر حلقة"><div class="latest">{pic(latest)}<div><span class="tag">الأحدث</span><h2>{E(latest["title"])}</h2><a class="btn" href="{yt(latest)}" rel="noopener" target="_blank">شاهد الحلقة</a></div></div></section>
 {start_html}
-<a class="btn wide" href="./#all">كل الحلقات ({len(eps)})</a>
+<a class="btn wide" href="{home}#all">كل الحلقات ({len(eps)})</a>
 <section class="card" aria-labelledby="h-follow"><h2 id="h-follow">تابعنا</h2><p class="sub">نفس الحكايات على كل المنصات.</p><div class="accts">{accounts}</div></section>
 <section class="card" aria-labelledby="h-suggest"><h2 id="h-suggest">اقترح حكاية</h2><p class="sub">وش الشيء اللي تبي نعرف أصله؟ اكتب لنا اسمه.</p><a class="btn wide" href="{SUGGEST_URL}" rel="noopener" target="_blank">أرسل اقتراحك</a></section>
-<section class="card" aria-labelledby="h-biz"><h2 id="h-biz">تواصل معنا</h2><p class="sub">{note}</p><div class="stack"><a class="btn wide" href="{DM_URL}" rel="noopener" target="_blank">راسلنا على إنستغرام</a>{mail}</div></section>
-<footer><a href="./">الموقع</a> · <a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">شروط الاستخدام</a><br>© 2026 أصل الحكاية</footer>
+<section class="card" aria-labelledby="h-biz"><h2 id="h-biz">تواصل معنا</h2><p class="sub">{note}</p><div class="stack">{contact_buttons()}</div></section>
+<footer><a href="{home}">الموقع</a> · <a href="{root}privacy.html">سياسة الخصوصية</a> · <a href="{root}terms.html">شروط الاستخدام</a><br>© 2026 أصل الحكاية</footer>
 </main>
 </body>
 </html>
@@ -234,7 +271,10 @@ def main():
         chips = "".join(f'<span class="part">الجزء {p.get("part")}</span>' for p in sorted(parts, key=lambda p: p.get("part", 0)))
         series_html += f'<section><h3>سلسلة {E(name)}</h3><div class="parts">{chips}<span class="part soon">الأجزاء الجاية قريبًا</span></div></section>'
     tiles = "".join(tile(e, imgs[e["id"]]) for e in eps)
-    plats = "".join(f'<a class="plat" href="{u}" rel="noopener" target="_blank">{n}</a>' for n, u in LINKS.values())
+    plats = "".join(f'<a class="plat" href="{u}" rel="noopener" target="_blank">{icon(k)}{n}</a>' for k, (n, u) in LINKS.items())
+    picks = start_picks(eps)
+    start_section = ('<section id="start"><h3>ابدأ من هنا</h3><p class="sub">جديد على القناة؟ هذي ثلاث حكايات تعرّفك عليها.</p>'
+                     f'<div class="rail three">{"".join(tile(e, imgs[e["id"]]) for e in picks)}</div></section>') if picks else ""
     latest_img = imgs[latest["id"]]
     page = f"""<!doctype html>
 <html lang="ar" dir="rtl">
@@ -291,7 +331,14 @@ h3{{font-size:22px;margin-bottom:12px}}
 .tile span{{position:absolute;bottom:0;left:0;right:0;padding:26px 8px 8px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:14px;font-weight:800}}
 .about p{{color:var(--muted);max-width:68ch;margin:0}}
 .plats{{display:flex;gap:10px;flex-wrap:wrap}}
-.plat{{border:1px solid #2E4A54;border-radius:999px;padding:9px 18px;font-weight:700;text-decoration:none}}
+.plat{{display:inline-flex;align-items:center;gap:8px;border:1px solid #2E4A54;border-radius:999px;padding:9px 18px;font-weight:700;text-decoration:none}}
+.sub{{color:var(--muted);margin:-6px 0 12px}}
+.rail.three{{grid-template-columns:repeat(3,minmax(0,1fr));max-width:560px}}
+.stack{{display:grid;gap:10px;max-width:360px}}
+.btn.wide{{display:flex;justify-content:center}}
+.logo{{display:inline-flex;align-items:center;gap:10px}}
+.logo img{{width:36px;height:36px;border-radius:50%;box-shadow:0 0 0 2px var(--gold)}}
+.ico{{flex:none}}
 footer{{border-top:1px solid var(--line);color:var(--muted);padding-block:18px;margin-top:18px;font-size:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}}
 footer a{{color:var(--muted)}}
 @media (max-width:640px){{.hero{{grid-template-columns:1fr}} .hero img{{max-width:240px}}}}
@@ -300,28 +347,33 @@ footer a{{color:var(--muted)}}
 </head>
 <body>
 <div class="wrap">
-<header><a class="logo" href="#top">أصل الحكاية</a><nav><a href="#series">السلاسل</a><a href="#all">كل الحكايات</a><a href="#about">عن القناة</a><a href="#follow">تابعنا</a></nav></header>
+<header><a class="logo" href="#top"><img src="assets/apple-touch-icon.png" alt="" width="36" height="36">أصل الحكاية</a><nav><a href="#start">ابدأ من هنا</a><a href="#series">السلاسل</a><a href="#all">كل الحكايات</a><a href="#about">عن القناة</a><a href="#follow">تابعنا</a><a href="#contact">تواصل معنا</a></nav></header>
 <main id="top">
 <div class="hero">
 <div><span class="tag">الأحدث</span><h1>{E(latest["title"])}</h1><p>كل شيء له بداية. نعود إلى اللحظة الأولى وراء الأشياء التي نستخدمها كل يوم، ونرويها حكايةً قصيرة لا تُنسى.</p>
 <div class="btns"><a class="btn" href="{latest.get("links", {}).get("youtube", LINKS["youtube"][1])}" rel="noopener" target="_blank">شاهد على يوتيوب</a><a class="btn ghost" href="#all">كل الحكايات</a></div></div>
 {f'<img src="{latest_img}" alt="غلاف {E(latest["title"])}" width="540" height="960">' if latest_img else ""}
 </div>
+{start_section}
 <div id="series">{series_html}</div>
 <section id="all"><h3>كل الحكايات</h3><div class="rail">{tiles}</div></section>
 <section id="about" class="about"><h3>عن أصل الحكاية</h3><p>فيديوهات قصيرة بالعربية الفصحى عن أصل الاختراعات والاكتشافات. كل معلومة نذكرها لها مصدر موثوق على الأقل، والرسوم مولّدة بالذكاء الاصطناعي لتصوير الأجواء، وهي ليست صورًا تاريخية.</p></section>
 <section id="follow"><h3>تابعنا</h3><div class="plats">{plats}</div></section>
+<section id="suggest"><h3>اقترح حكاية</h3><p class="sub">وش الشيء اللي تبي نعرف أصله؟ اكتب لنا اسمه.</p><div class="stack"><a class="btn wide" href="{SUGGEST_URL}" rel="noopener" target="_blank">أرسل اقتراحك</a></div></section>
+<section id="contact"><h3>تواصل معنا</h3><p class="sub">{E(CONTACT_NOTE) if CONTACT_NOTE else CONTACT_LINE}</p><div class="stack">{contact_buttons()}</div></section>
 </main>
-<footer><span>© 2026 أصل الحكاية</span><span><a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">شروط الاستخدام</a></span></footer>
+<footer><span>© 2026 أصل الحكاية</span><span><a href="links.html">كل الروابط</a> · <a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">شروط الاستخدام</a></span></footer>
 </div>
 </body>
 </html>
 """
     (SITE / "index.html").write_text(page, encoding="utf-8")
     (SITE / "links.html").write_text(render_links(eps, imgs), encoding="utf-8")
+    (SITE / "l").mkdir(exist_ok=True)  # short link for the bio: the same hub at /l/ (canonical stays links.html)
+    (SITE / "l" / "index.html").write_text(render_links(eps, imgs, "../"), encoding="utf-8")
     icons()
     static_files(today)
-    print(f"index.html + links.html: {len(eps)} episodes, latest «{latest['title']}», covers {sum(1 for v in imgs.values() if v)}")
+    print(f"index.html + links.html + l/: {len(eps)} episodes, latest «{latest['title']}», covers {sum(1 for v in imgs.values() if v)}")
 
 
 if __name__ == "__main__":
