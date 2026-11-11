@@ -21,4 +21,12 @@ button.tt { background:#fff; color:#000; }
 .who { display:flex; align-items:center; gap:14px; }
 .who img { width:56px; height:56px; border-radius:50%; background:#0c0f17; }
 video { width:100%; max-width:260px; border-radius:10px; background:#000; display:block; margin:10px 0; }
+.nums { display:flex; gap:12px; flex-wrap:wrap; margin:10px 0; }
+.nums div { flex:1 1 120px; background:#0c0f17; border:1px solid var(--line); border-radius:10px; padding:12px; text-align:center; }
+.nums b { display:block; font-size:1.6rem; color:var(--text); }
+.nums span { color:var(--muted); font-size:.9rem; }
+.vids { width:100%; border-collapse:collapse; margin-top:12px; font-size:.92rem; }
+.vids th, .vids td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); }
+.vids th { color:var(--muted); font-weight:normal; }
+.vids td:nth-child(n+3), .vids th:nth-child(n+3) { text-align:right; }
 footer { border-top:1px solid var(--line); padding:20px 0; color:var(--muted); }

@@ -22,6 +22,20 @@
       <div class="who"><img id="avatar" alt="" width="56" height="56"><b id="name"></b></div>
     </div>
 
+    <div class="card" id="stats" hidden>
+      <h2>Account statistics</h2>
+      <p id="statsMsg" role="status">Loading the account's numbers from TikTok…</p>
+      <div class="nums" id="nums" hidden>
+        <div><b id="nFollowers"></b><span>Followers</span></div>
+        <div><b id="nLikes"></b><span>Likes</span></div>
+        <div><b id="nVideos"></b><span>Videos</span></div>
+      </div>
+      <table class="vids" id="vids" hidden>
+        <thead><tr><th>Recent video</th><th>Posted</th><th>Views</th><th>Likes</th></tr></thead>
+        <tbody id="vidRows"></tbody>
+      </table>
+    </div>
+
     <div class="card" id="draft" hidden>
       <h2>Send a video to the TikTok inbox as a draft</h2>
       <p>This is the video that will be sent. It goes to the connected account's TikTok inbox as a <b>draft</b>; the owner reviews and publishes it inside the TikTok app.</p>
@@ -67,6 +81,30 @@
         }).catch(function () { say(stateEl, 'Could not reach the bot.', 'bad'); send.disabled = false; });
       });
 
+      // Sandbox only (the TikTok review demo): followers / likes / videos and the recent videos with their views.
+      function fmt(n) { return Number(n || 0).toLocaleString('en-US'); }
+      function loadStats() {
+        var sm = document.getElementById('statsMsg');
+        show('stats', true);
+        call({ route: 'tiktok.stats', session: session }).then(function (r) {
+          if (!r || !r.ok) { say(sm, (r && r.error) || 'The statistics could not be read.', 'bad'); return; }
+          sm.textContent = '';
+          document.getElementById('nFollowers').textContent = fmt(r.followers);
+          document.getElementById('nLikes').textContent = fmt(r.likes);
+          document.getElementById('nVideos').textContent = fmt(r.videos);
+          show('nums', true);
+          var rows = document.getElementById('vidRows');
+          (r.recent || []).forEach(function (v) {
+            var tr = document.createElement('tr');
+            [v.title || '(no title)', v.created ? new Date(v.created * 1000).toISOString().substring(0, 10) : '', fmt(v.views), fmt(v.likes)].forEach(function (x) {
+              var td = document.createElement('td'); td.textContent = x; tr.appendChild(td);
+            });
+            rows.appendChild(tr);
+          });
+          if ((r.recent || []).length) show('vids', true);
+        }).catch(function () { say(sm, 'Could not reach the bot.', 'bad'); });
+      }
+
       var retry = document.getElementById('retry');
       function exchange() {
         retry.hidden = true; say(msg, 'Checking the answer from TikTok…', '');
@@ -82,6 +120,7 @@
           document.getElementById('name').textContent = r.display_name || 'TikTok account';
           if (/^https:\/\//.test(r.avatar_url || '')) document.getElementById('avatar').src = r.avatar_url;
           show('who', true); show('draft', true);
+          if (r.sandbox) loadStats();
         }).catch(function () { fail('Could not reach the bot.'); retry.hidden = false; });
       }
       retry.addEventListener('click', exchange);

@@ -30,6 +30,8 @@
       <ul>
         <li><b>user.info.basic</b> — shows the connected account's name and picture on this page.</li>
         <li><b>video.upload</b> — sends a video to the connected account's inbox as a draft.</li>
+        <li id="sbStats" hidden><b>user.info.stats</b> — shows the connected account's follower, like and video counts on the next page.</li>
+        <li id="sbList" hidden><b>video.list</b> — lists the connected account's recent videos and their views on the next page.</li>
       </ul>
       <p>See the <a href="../privacy.html">privacy policy</a> and the <a href="../terms.html">terms</a>.</p>
     </div>
@@ -39,13 +41,16 @@
   <script>
     (function () {
       var C = window.ASL_TIKTOK, input = document.getElementById('code'), go = document.getElementById('go'), msg = document.getElementById('msg');
+      var sandbox = new URLSearchParams(location.search).get('sandbox') === '1' && C.sandboxKey;  // the review demo: the app's Sandbox
+      var key = sandbox ? C.sandboxKey : C.clientKey, scope = sandbox ? C.sandboxScope : C.scope;
+      if (sandbox) { document.getElementById('sbStats').hidden = false; document.getElementById('sbList').hidden = false; }
       function clean(v) { return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
       input.addEventListener('input', function () { input.value = clean(input.value); go.disabled = input.value.length !== 10; });
       go.addEventListener('click', function () {
         var code = clean(input.value);
         if (code.length !== 10) { msg.textContent = 'The code has 10 letters and digits.'; return; }
-        var url = 'https://www.tiktok.com/v2/auth/authorize/?client_key=' + encodeURIComponent(C.clientKey) +
-          '&scope=' + encodeURIComponent(C.scope) + '&response_type=code&redirect_uri=' + encodeURIComponent(C.redirectUri) +
+        var url = 'https://www.tiktok.com/v2/auth/authorize/?client_key=' + encodeURIComponent(key) +
+          '&scope=' + encodeURIComponent(scope) + '&response_type=code&redirect_uri=' + encodeURIComponent(C.redirectUri) +
           '&state=' + encodeURIComponent(code) + '&disable_auto_auth=1';  // always show TikTok's consent screen
         window.location.assign(url);
       });
