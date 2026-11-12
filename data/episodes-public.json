@@ -206,5 +206,29 @@
     "links": {
       "youtube": "https://youtu.be/D1qaRt3w5ZI"
     }
+  },
+  {
+    "id": "EP-BULBUL_SAFIR",
+    "title": "صوت صفير البلبل",
+    "series": null,
+    "part": null,
+    "published": "2026-11-08",
+    "status": "published",
+    "cover": "card-bulbul.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/4JhiwaYCotY"
+    }
+  },
+  {
+    "id": "EP-21",
+    "title": "المنديل الورقي",
+    "series": null,
+    "part": null,
+    "published": "2026-11-10",
+    "status": "published",
+    "cover": "card-ep21-v2.png",
+    "links": {
+      "youtube": "https://youtu.be/zAd3ABfnWiY"
+    }
   }
 ]
