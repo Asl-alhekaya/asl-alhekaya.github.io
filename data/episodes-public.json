@@ -174,7 +174,9 @@
     "published": "2026-11-01",
     "cover": "card-ep13.png",
     "links": {
-      "youtube": "https://youtube.com/shorts/BgieUoicgt8"
+      "youtube": "https://youtube.com/shorts/BgieUoicgt8",
+      "instagram": "https://www.instagram.com/reel/DfLIAtpBXsx/",
+      "facebook": "https://www.facebook.com/reel/1813261956481191/"
     }
   },
   {
@@ -184,7 +186,9 @@
     "published": "2026-11-02",
     "cover": "card-ep16.png",
     "links": {
-      "youtube": "https://youtu.be/DGd7j4nPJto"
+      "youtube": "https://youtu.be/DGd7j4nPJto",
+      "instagram": "https://www.instagram.com/reel/DfPuFqiNc3w/",
+      "facebook": "https://www.facebook.com/reel/1173332141692973/"
     }
   },
   {
@@ -194,7 +198,9 @@
     "published": "2026-11-04",
     "cover": "card-ep18.png",
     "links": {
-      "youtube": "https://youtu.be/Iq4B_9UR4tc"
+      "youtube": "https://youtu.be/Iq4B_9UR4tc",
+      "instagram": "https://www.instagram.com/reel/DfVS2JpPEEv/",
+      "facebook": "https://www.facebook.com/reel/1789491178973885/"
     }
   },
   {
@@ -204,7 +210,9 @@
     "published": "2026-11-06",
     "cover": "card-ep19.png",
     "links": {
-      "youtube": "https://youtu.be/D1qaRt3w5ZI"
+      "youtube": "https://youtu.be/D1qaRt3w5ZI",
+      "instagram": "https://www.instagram.com/reel/DfZqdzpEuWy/",
+      "facebook": "https://www.facebook.com/reel/1075577715483883/"
     }
   },
   {
@@ -216,7 +224,9 @@
     "status": "published",
     "cover": "card-bulbul.png",
     "links": {
-      "youtube": "https://youtube.com/shorts/4JhiwaYCotY"
+      "youtube": "https://youtube.com/shorts/4JhiwaYCotY",
+      "instagram": "https://www.instagram.com/reel/DfeWyVZtzm9/",
+      "facebook": "https://www.facebook.com/reel/1436357701981791/"
     }
   },
   {
@@ -228,7 +238,23 @@
     "status": "published",
     "cover": "card-ep21-v2.png",
     "links": {
-      "youtube": "https://youtu.be/zAd3ABfnWiY"
+      "youtube": "https://youtu.be/zAd3ABfnWiY",
+      "instagram": "https://www.instagram.com/reel/Dfkj7gBhqXS/",
+      "facebook": "https://www.facebook.com/reel/1076460752105119/"
+    }
+  },
+  {
+    "id": "EP-INDOMIE",
+    "title": "النودلز سريعة التحضير",
+    "series": null,
+    "part": null,
+    "published": "2026-11-13",
+    "status": "published",
+    "cover": "card-ep22noodles.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/bbHlLsApxSc",
+      "instagram": "https://www.instagram.com/reel/DfrRLlTAEw8/",
+      "facebook": "https://www.facebook.com/reel/1844414549922181/"
     }
   }
 ]
