@@ -256,5 +256,19 @@
       "instagram": "https://www.instagram.com/reel/DfrRLlTAEw8/",
       "facebook": "https://www.facebook.com/reel/1844414549922181/"
     }
+  },
+  {
+    "id": "EP-23",
+    "title": "سلة خوخ",
+    "series": null,
+    "part": null,
+    "published": "2026-11-15",
+    "status": "published",
+    "cover": "card-ep23.png",
+    "links": {
+      "youtube": "https://www.youtube.com/shorts/9NK3agA2jSs",
+      "instagram": "https://www.instagram.com/reel/DfxhtdMud-N/",
+      "facebook": "https://www.facebook.com/reel/1855632228951709/"
+    }
   }
 ]
