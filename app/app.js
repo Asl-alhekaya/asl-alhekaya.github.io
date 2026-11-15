@@ -14,7 +14,7 @@ var view = document.getElementById('view');
 var toastEl = document.getElementById('toast');
 var stampEl = document.getElementById('stamp');
 var refreshBtn = document.getElementById('refresh');
-var TABS = ['job', 'ideas', 'stats', 'bank'];
+var TABS = ['job', 'ideas', 'stats', 'bank', 'state'];
 var state = { tab: 'job', data: null, loading: false };
 var toastTimer = null;
 
@@ -515,9 +515,58 @@ function renderBank(d) {
   view.appendChild(set);
 }
 
+// ---------- tab 5: the state (read only; no button, no action; publishing is never here)
+
+var SYS_ICON = { green: '🟢', yellow: '🟡', red: '🔴', old: '⚪' };
+var BRAIN_LINE = { claude: 'كلود هو اللي يجاوب الحين', gemini: 'جيميناي يجاوب الحين لأن كلود ما رد', none: 'ما فيه جواب حديث من أي ذكاء' };
+
+function loadState() {
+  if (state.stateLoading) return;
+  state.stateLoading = true;
+  state.stateData = null;
+  skeleton();
+  api('state').then(function (r) {
+    state.stateLoading = false;
+    if (!r || !r.ok) { if (state.tab === 'state') fail(r); return; }
+    state.stateData = r;
+    setStamp({ at: r.state && r.state.generated_at });
+    if (state.tab === 'state') render();
+  });
+}
+
+function renderState(d) {
+  var r = state.stateData;
+  view.appendChild(el('h1', '', 'الحالة'));
+  if (!r) { loadState(); return; }
+  var b = r.brain || {};
+  view.appendChild(add(el('div', 'card soft'), el('div', 'mt', 'الذكاء اللي يجاوب'), el('div', 'nm', BRAIN_LINE[b.who] || BRAIN_LINE.none)));
+  if (r.missing) { view.appendChild(el('p', 'empty', r.msg || 'ما وصل ملف الحالة للحين')); return; }
+  var s = r.state || {};
+  if (s.stale) view.appendChild(add(el('div', 'card info'), el('p', '', 'ملف الحالة قديم' + (isNum(s.age_min) ? ' (من ' + Math.round(s.age_min / 60) + ' ساعة)' : '') + ': الألوان رمادية لين يتحدث.')));
+  (s.systems || []).forEach(function (x) {
+    var c = el('div', 'card');
+    add(c, add(el('div', 'row'), el('span', 'nm', (SYS_ICON[x.colour] || '⚪') + ' ' + x.name), el('span', 'chip', x.line)));
+    if (x.reason && x.colour !== 'old' && x.colour !== 'green') { var rs = el('p', 'mt muted', x.reason); rs.dir = 'ltr'; c.appendChild(rs); }
+    view.appendChild(c);
+  });
+  view.appendChild(el('h2', '', 'نقاط مفتوحة'));
+  var inv = s.invariants || [], ic = el('div', 'card');
+  if (!inv.length) ic.appendChild(el('p', 'empty', 'ما فيه نقاط مفتوحة.'));
+  inv.forEach(function (i) {
+    var t = el('div', 'nm', (i.ok === false ? '🔴 ' : '⚪ ') + i.id); ic.appendChild(add(el('div', 'row'), t));
+    var tl = el('p', 'mt muted', i.title); tl.dir = 'ltr'; ic.appendChild(tl);
+  });
+  view.appendChild(ic);
+  view.appendChild(el('h2', '', 'أهم ٣ أشياء عليك'));
+  var top = s.top || [], tc = el('div', 'card');
+  if (!top.length) tc.appendChild(el('p', 'empty', 'ما عليك شي الحين.'));
+  top.forEach(function (t, i) { add(tc, add(el('div', 'row'), el('span', 'nm', (i + 1) + '. ' + t.text))); });
+  view.appendChild(tc);
+}
+
 // ---------- navigation
 
-var RENDER = { job: renderJob, ideas: renderIdeas, stats: renderStats, bank: renderBank };
+var RENDER = { job: renderJob, ideas: renderIdeas, stats: renderStats, bank: renderBank, state: renderState };
 
 function render() {
   if (!state.data) return;
@@ -537,13 +586,14 @@ function go(tab) {
   saveTab(tab);
   markTabs();
   window.scrollTo(0, 0);
+  if (tab === 'state') { loadState(); return; }  // the state tab reads its own file each time it is opened
   if (state.data) render();
 }
 
 Array.prototype.forEach.call(document.querySelectorAll('#tabs button'), function (b) {
   b.onclick = function () { tap(); go(b.getAttribute('data-tab')); };
 });
-refreshBtn.onclick = function () { tap(); load(); };
+refreshBtn.onclick = function () { tap(); if (state.tab === 'state') loadState(); else load(); };
 
 state.tab = readTab();
 markTabs();
