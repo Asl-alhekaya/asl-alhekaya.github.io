@@ -270,5 +270,19 @@
       "instagram": "https://www.instagram.com/reel/DfxhtdMud-N/",
       "facebook": "https://www.facebook.com/reel/1855632228951709/"
     }
+  },
+  {
+    "id": "EP-24",
+    "title": "صحون مكسورة",
+    "series": null,
+    "part": null,
+    "published": "2026-11-17",
+    "status": "published",
+    "cover": "studio/render/out/card-ep24-dishwasher.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/cZubp0-IZ94",
+      "instagram": "https://www.instagram.com/reel/Df2dhwVFFYI/",
+      "facebook": "https://www.facebook.com/reel/2185479825694229/"
+    }
   }
 ]
