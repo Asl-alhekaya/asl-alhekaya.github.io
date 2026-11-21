@@ -284,5 +284,19 @@
       "instagram": "https://www.instagram.com/reel/Df2dhwVFFYI/",
       "facebook": "https://www.facebook.com/reel/2185479825694229/"
     }
+  },
+  {
+    "id": "EP-25",
+    "title": "البنج",
+    "series": null,
+    "part": null,
+    "published": "2026-11-19",
+    "status": "published",
+    "cover": "episodes/EP-25_ALBANJ/publish/cover.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/b5p6Jxwa-e0",
+      "instagram": "https://www.instagram.com/reel/Df7zZngpC06/",
+      "facebook": "https://www.facebook.com/reel/1137719635516307/"
+    }
   }
 ]
