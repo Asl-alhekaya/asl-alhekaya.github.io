@@ -298,5 +298,19 @@
       "instagram": "https://www.instagram.com/reel/Df7zZngpC06/",
       "facebook": "https://www.facebook.com/reel/1137719635516307/"
     }
+  },
+  {
+    "id": "EP-26",
+    "title": "عربة التسوق",
+    "series": null,
+    "part": null,
+    "published": "2026-11-21",
+    "status": "published",
+    "cover": "episodes/EP-26_ARABAT_ALTASAWWUQ/publish/cover.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/ThOvtmx-Smw",
+      "instagram": "https://www.instagram.com/reel/DgBGW-WJLey/",
+      "facebook": "https://www.facebook.com/reel/1667495831592956/"
+    }
   }
 ]
