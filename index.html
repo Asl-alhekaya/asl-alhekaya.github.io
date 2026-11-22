@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src https://static.cloudflareinsights.com; connect-src https://cloudflareinsights.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' https://static.cloudflareinsights.com; connect-src https://asl-suggest.asl-alhekaya.workers.dev https://cloudflareinsights.com; base-uri 'none'; form-action https://asl-suggest.asl-alhekaya.workers.dev 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#F3EEE3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B2E37" media="(prefers-color-scheme: dark)">
@@ -322,11 +322,27 @@ footer a{color:var(--muted);display:inline-flex;align-items:center;min-height:44
 </header>
 <section class="card" id="suggest" aria-labelledby="h-suggest">
 <svg class="star s3" viewBox="-1 -1 2 2" aria-hidden="true"><path d="M0 -1 C0.1 -0.32 0.32 -0.1 1 0 C0.32 0.1 0.1 0.32 0 1 C-0.1 0.32 -0.32 0.1 -1 0 C-0.32 -0.1 -0.1 -0.32 0 -1Z"/></svg>
+<form id="sform" method="post" action="https://asl-suggest.asl-alhekaya.workers.dev/suggest">
 <h2 id="h-suggest">ما الشيء الذي تودّ أن نحكي أصله؟</h2>
 <div class="line" aria-hidden="true"></div>
-<p class="lead">اكتب اسم الشيء في نموذج قصير، دون تسجيل ودون ذكر اسمك.</p>
-<a class="pbtn" href="https://docs.google.com/forms/d/e/1FAIpQLSedk0L4NDfFcKsEDVEF9TqHzi3TysLcbzONCDBg_SR7AdgwMQ/viewform" rel="noopener" target="_blank">أرسل اقتراحك</a>
-<p class="note">لا تكتب رقمًا أو حسابًا أو أي معلومة شخصية. <a href="privacy.html">الخصوصية</a></p>
+<fieldset><legend class="sr">من أي باب هو؟ (اختياري)</legend><div class="chips"><label class="chip"><input type="radio" name="topic" value="daily"><span>شيء نستخدمه كل يوم</span></label><label class="chip"><input type="radio" name="topic" value="food"><span>أكلة أو مشروب</span></label><label class="chip"><input type="radio" name="topic" value="habit"><span>عادة أو كلمة</span></label><label class="chip"><input type="radio" name="topic" value="invention"><span>اختراع</span></label><label class="chip"><input type="radio" name="topic" value="place"><span>مكان أو مدينة</span></label><label class="chip"><input type="radio" name="topic" value="heritage"><span>تراث وتقاليد</span></label><label class="chip"><input type="radio" name="topic" value="home"><span>في البيت</span></label><label class="chip"><input type="radio" name="topic" value="other"><span>أخرى</span></label></div></fieldset>
+<div class="field"><label for="stext" class="sr">ما الشيء الذي تودّ أن نحكي أصله؟</label>
+<textarea id="stext" name="text" rows="2" required minlength="3" maxlength="200" aria-describedby="smsg" placeholder="شيء تستخدمه أو تأكله أو تقوله كل يوم، ولم تسأل يومًا من أين جاء؟"></textarea>
+<span class="count" id="scount" aria-hidden="true">0 / 200</span></div>
+<div class="hp" aria-hidden="true"><label>موقعك <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+<input type="hidden" name="src" id="ssrc" value="">
+<input type="hidden" name="t" id="st" value="">
+<p class="msg" id="smsg" role="status" aria-live="polite"></p>
+<p class="msg oops" id="suggest-error">لم يصل الاقتراح، جرّب مرة أخرى بعد قليل.</p>
+<button class="pbtn" id="sbtn" type="submit"><span class="spin" aria-hidden="true"></span><span id="sbtn-label">أرسل الاقتراح</span></button>
+<p class="note">دون تسجيل ودون ذكر اسمك، ونقرأ كل اقتراح. لا تكتب رقمًا أو حسابًا أو أي معلومة شخصية. <a href="privacy.html">الخصوصية</a></p>
+</form>
+<div class="thanks" id="thanks" tabindex="-1">
+<span class="book" aria-hidden="true"><img src="assets/home/book.webp" alt="" width="84" height="98"><svg class="star s4" viewBox="-1 -1 2 2" aria-hidden="true"><path d="M0 -1 C0.1 -0.32 0.32 -0.1 1 0 C0.32 0.1 0.1 0.32 0 1 C-0.1 0.32 -0.32 0.1 -1 0 C-0.32 -0.1 -0.1 -0.32 0 -1Z"/></svg><svg class="star s5" viewBox="-1 -1 2 2" aria-hidden="true"><path d="M0 -1 C0.1 -0.32 0.32 -0.1 1 0 C0.32 0.1 0.1 0.32 0 1 C-0.1 0.32 -0.32 0.1 -1 0 C-0.32 -0.1 -0.1 -0.32 0 -1Z"/></svg></span>
+<h3>وصل اقتراحك، شكرًا لك</h3>
+<p>نقرأ كل اقتراح بأنفسنا. وإذا صار حكاية، ستراه على القناة.</p>
+<a class="pbtn ghost" href="#suggest" id="sagain">اقترح شيئًا آخر</a>
+</div>
 </section>
 <div class="hero night" aria-hidden="true"><div class="hero-book"><img src="assets/home/book.webp" alt="" width="240" height="281"><svg class="star s6" viewBox="-1 -1 2 2" aria-hidden="true"><path d="M0 -1 C0.1 -0.32 0.32 -0.1 1 0 C0.32 0.1 0.1 0.32 0 1 C-0.1 0.32 -0.32 0.1 -1 0 C-0.32 -0.1 -0.1 -0.32 0 -1Z"/></svg><svg class="star s7" viewBox="-1 -1 2 2" aria-hidden="true"><path d="M0 -1 C0.1 -0.32 0.32 -0.1 1 0 C0.32 0.1 0.1 0.32 0 1 C-0.1 0.32 -0.32 0.1 -1 0 C-0.32 -0.1 -0.1 -0.32 0 -1Z"/></svg></div></div>
 </div></div></div>
@@ -342,6 +358,7 @@ footer a{color:var(--muted);display:inline-flex;align-items:center;min-height:44
 </div>
 </main>
 <div class="wrap"><footer><span>© 2026 أصل الحكاية</span><span><a href="links.html">كل الروابط</a> · <a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">شروط الاستخدام</a></span></footer></div>
+<script defer src="assets/suggest.js"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "c151d936e0444cbea7fa60e3e09dd8c6"}'></script>
 </body>
 </html>
