@@ -5,51 +5,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="شروط استخدام موقع أصل الحكاية.">
-  <meta name="theme-color" content="#10131d">
+  <meta name="theme-color" content="#F3EEE3" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0B2E37" media="(prefers-color-scheme: dark)">
   <title>شروط الاستخدام | أصل الحكاية</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Cairo:wght@700;800;900&display=swap">
   <style>
-    :root {
-      color-scheme: dark;
-      --bg: #10131d;
-      --panel: #191e2b;
-      --text: #f7f3ea;
-      --muted: #c2c5d0;
-      --gold: #e7bd72;
-      --line: rgba(255,255,255,.13);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Tahoma, Arial, sans-serif;
-      line-height: 2;
-    }
-    a { color: var(--gold); }
-    header, footer { border-color: var(--line); border-style: solid; }
-    header { border-width: 0 0 1px; }
-    footer { border-width: 1px 0 0; color: var(--muted); }
-    .container { width: min(850px, 90%); margin: auto; }
-    nav, footer { padding: 20px 0; }
-    nav { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-    nav a { text-decoration: none; }
-    main { padding: 55px 0 75px; }
-    .eyebrow { color: var(--gold); font-weight: bold; }
-    h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.4; }
-    h2 { margin-top: 34px; font-size: 1.25rem; }
-    p, li { color: var(--muted); }
-    .notice {
-      padding: 16px 20px;
-      border-right: 3px solid var(--gold);
-      background: var(--panel);
-      border-radius: 8px;
+    :root{color-scheme:light dark;--bg:#F3EEE3;--panel:#FBF7EE;--text:#14232B;--muted:#4D5D63;--gold:#F6C445;--teal:#0F4C5C;--line:#14232B;--focus:#1A7089}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:"Almarai",Tahoma,sans-serif;line-height:1.95}
+    a{color:var(--teal);text-underline-offset:3px}
+    a:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+    .container{width:min(820px,100% - 32px);margin:auto}
+    header{border-bottom:2px solid var(--line)}
+    footer{border-top:2px solid var(--line);color:var(--muted)}
+    nav,footer{padding:6px 0}
+    nav{display:flex;justify-content:space-between;gap:0 16px;flex-wrap:wrap}
+    nav a,footer a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;font-weight:700}
+    main{padding:34px 0 56px}
+    .eyebrow{display:inline-block;font-family:"Cairo","Almarai",sans-serif;font-weight:800;color:var(--teal);
+      border-bottom:3px solid var(--gold);line-height:1.6}
+    h1,h2{font-family:"Cairo","Almarai",sans-serif;text-wrap:balance}
+    h1{font-weight:900;font-size:clamp(2rem,6vw,3rem);line-height:1.3;margin:10px 0 8px}
+    h2{font-weight:800;font-size:1.25rem;line-height:1.5;margin:34px 0 6px;padding-inline-start:12px;border-inline-start:4px solid var(--gold)}
+    p,li{color:var(--muted)}
+    .notice{padding:16px 20px;background:var(--panel);border:2px solid var(--line);box-shadow:5px 5px 0 var(--gold)}
+    @media (prefers-color-scheme:dark){
+      :root{--bg:#0B2E37;--panel:#06222C;--text:#F3EEE3;--muted:#D9E3E2;--teal:#F6C445;--line:rgba(246,196,69,.55);--focus:#F6C445}
+      h1{color:#F6C445}
+      .eyebrow{color:#F3EEE3}
+      .notice{border:1px solid rgba(246,196,69,.75);box-shadow:inset 0 0 0 4px #06222C,inset 0 0 0 5px rgba(246,196,69,.35)}
     }
   </style>
 </head>
 <body>
   <header>
     <nav class="container">
-      <a href="index.html">← العودة إلى أصل الحكاية</a>
+      <a href="index.html">→ العودة إلى أصل الحكاية</a>
       <a href="privacy.html">سياسة الخصوصية</a>
     </nav>
   </header>

@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src https://static.cloudflareinsights.com; connect-src https://cloudflareinsights.com; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta name="theme-color" content="#0B1416">
+<meta name="theme-color" content="#F3EEE3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B2E37" media="(prefers-color-scheme: dark)">
 <title>أصل الحكاية | كل الروابط</title>
 <meta name="description" content="كل روابط أصل الحكاية في مكان واحد: حسابات القناة، آخر حلقة، وكل الحكايات.">
 <link rel="canonical" href="https://asl-alhekaya.github.io/links.html">
@@ -25,54 +26,147 @@
 <meta name="twitter:title" content="أصل الحكاية | كل شيء له بداية">
 <meta name="twitter:description" content="كل روابط أصل الحكاية في مكان واحد: حسابات القناة، آخر حلقة، وكل الحكايات.">
 <meta name="twitter:image" content="https://asl-alhekaya.github.io/assets/og-links.jpg">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Reem+Kufi:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Cairo:wght@700;800;900&display=swap">
 <style>
-:root{--bg:#0B1416;--card:#13232A;--ink:#EEF3F2;--cream:#F6EBCB;--muted:#A7BABD;--gold:#F2C14E;--teal:#1E5463;--line:#2A4753}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:radial-gradient(130% 60% at 50% 0%,var(--teal) 0%,transparent 70%),var(--bg);color:var(--ink);font-family:"Almarai",Tahoma,sans-serif;line-height:1.7}
-a{color:inherit}
-main{max-width:480px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));display:grid;gap:14px}
-h1,h2{font-family:"Reem Kufi","Almarai",sans-serif;text-wrap:balance;margin:0}
-.top{text-align:center}
-.top img{width:96px;height:96px;border-radius:50%;box-shadow:0 0 0 3px var(--gold),0 14px 30px rgba(0,0,0,.5)}
-.top h1{color:var(--cream);font-size:34px;margin-top:10px;line-height:1.3}
-.top p{color:var(--muted);margin:2px 0 0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
-.card h2{color:var(--gold);font-size:21px}
-.sub{color:var(--muted);font-size:14px;margin:2px 0 12px}
-.tag{display:inline-block;background:var(--gold);color:#1A1405;font-weight:800;border-radius:6px;padding:0 10px;font-size:13px}
-.latest{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center}
-.latest img{width:96px;height:auto;aspect-ratio:9/16;object-fit:cover;border-radius:12px;display:block;background:#0B1416}
-.latest h2{color:var(--cream);margin:6px 0 10px;font-size:22px;line-height:1.4}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;background:var(--gold);color:#1A1405;padding:8px 18px;border-radius:12px;font-weight:800;text-decoration:none;text-align:center}
-.btn.ghost{background:transparent;color:var(--ink);border:1px solid #3A5560}
-.btn.wide{display:flex;width:100%}
-.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.mini{position:relative;display:block;border-radius:12px;overflow:hidden;background:#0B1416;text-decoration:none}
-.mini img{width:100%;height:auto;aspect-ratio:9/16;object-fit:cover;display:block}
-.mini span{position:absolute;inset:auto 0 0 0;padding:22px 6px 6px;background:linear-gradient(transparent,rgba(0,0,0,.9));font-size:13px;font-weight:800;line-height:1.35}
-.accts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.acct{display:flex;align-items:center;justify-content:center;gap:9px;min-height:52px;border:1px solid #3A5560;border-radius:14px;font-weight:800;text-decoration:none;background:rgba(255,255,255,.03)}
-.acct:first-child{grid-column:1/-1;background:var(--gold);border-color:var(--gold);color:#1A1405}
-.stack{display:grid;gap:10px}
-.ico{flex:none}
-@media (prefers-reduced-motion:no-preference){.top img{animation:float 5s ease-in-out infinite}@keyframes float{50%{transform:translateY(-5px)}}}
-a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
-a.btn:hover,a.acct:hover,a.mini:hover{filter:brightness(1.1)}
-footer{text-align:center;color:var(--muted);font-size:13px;padding-top:6px}
-footer a{color:var(--muted)}
+body{margin:0;min-height:100vh;background:#F3EEE3}
+main.low{max-width:480px;margin:0 auto;padding:22px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));
+  display:grid;gap:18px}
+.low .top{text-align:center}
+.low .top img{width:92px;height:92px;border-radius:50%;box-shadow:0 0 0 3px #F6C445,0 10px 24px rgba(6,34,44,.3)}
+.low .top h1{font-family:"Cairo","Almarai",sans-serif;font-weight:900;font-size:34px;line-height:1.25;margin:8px 0 0;color:#14232B}
+.low .top h1 span{color:#0F4C5C}
+.low .top p{margin:0;color:#4D5D63;font-family:"Cairo","Almarai",sans-serif;font-weight:800}
+.low .panel .sec-h{margin-bottom:4px}
+.low .panel .sub{margin-bottom:12px}
+.low .newest{display:grid;grid-template-columns:112px minmax(0,1fr);gap:14px;align-items:center}
+.low .newest .nt{font-family:"Cairo","Almarai",sans-serif;font-weight:900;font-size:21px;line-height:1.35;margin:4px 0 10px;overflow-wrap:anywhere}
+.low .tag{display:inline-block;background:#14232B;color:#F6C445;font-family:"Cairo","Almarai",sans-serif;font-weight:800;font-size:13px;
+  padding:0 10px;border-radius:3px}
+.low .accts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.low .accts .pill:first-child{grid-column:1/-1}
+.low .panel .cards{gap:16px 12px}
+.low .panel .ep-a{padding:5px 5px 0}
+.low .panel .ttl{font-size:14px}
+.low,.low *,.low *::before,.low *::after{box-sizing:border-box}
+.low{--ink:#14232B;--muted:#4D5D63;--paper:#FBF7EE;--teal:#0F4C5C;--gold:#F6C445;--goldD:#b8862b;--focus:#1A7089;
+  --gold-grad:linear-gradient(135deg,#fff0a8 0%,#F6C445 28%,#b8862b 52%,#f6d77a 74%,#9a6a12 100%);
+  color:var(--ink);font-family:"Almarai",Tahoma,sans-serif;line-height:1.8}
+.low h2,.low h3,.low .sec-h{font-family:"Cairo","Almarai",Tahoma,sans-serif;margin:0;text-wrap:balance}
+.low a{color:inherit}
+.low a:focus-visible,.low summary:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.low .sec{padding-block:30px 6px}
+.low .sec-h{display:flex;align-items:center;justify-content:center;gap:12px;font-size:24px;font-weight:800;line-height:1.4;
+  text-align:center;margin:0 auto 6px;max-width:520px;color:var(--ink)}
+.low .sec-h i{flex:1;height:2px;background:var(--ink);position:relative;min-width:24px}
+.low .sec-h i::after{content:"";position:absolute;top:50%;width:9px;height:9px;margin-top:-4.5px;background:var(--gold);
+  clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.low .sec-h i:first-child::after{left:-2px}
+.low .sec-h i:last-child::after{right:-2px}
+.low .sub{color:var(--muted);text-align:center;margin:0 auto 16px;max-width:52ch;font-size:15px}
+
+/* the episode card: equal heights, real-text titles, nothing tilted */
+.low .cards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px}
+.low .ep{display:flex;flex-direction:column;min-width:0}
+.low .ep-a{position:relative;display:flex;flex-direction:column;text-decoration:none;background:var(--paper);
+  border:2px solid var(--ink);box-shadow:5px 5px 0 var(--gold);padding:6px 6px 0;transition:box-shadow .15s,transform .15s}
+.low .art{position:relative;display:block;aspect-ratio:4/5;overflow:hidden;background:#124351;border:1.5px solid var(--ink)}
+.low .art::after{content:"";position:absolute;inset:4px;border:1px solid rgba(246,196,69,.75);pointer-events:none}
+.low .art img{display:block;width:100%;height:100%;object-fit:cover}
+.low .art.paint{display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse 80% 55% at 50% 0,rgba(255,232,170,.35),transparent 70%),linear-gradient(180deg,#155061,#0B2E37)}
+.low .art.paint img{width:auto;height:82%;aspect-ratio:9/16;object-fit:cover;outline:3px solid #c9a24a;outline-offset:0;
+  box-shadow:0 8px 16px rgba(0,0,0,.5)}
+.low .plq{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  min-height:62px;margin:-16px 8px 10px;padding:7px 10px 6px;border-radius:5px;background:var(--gold-grad);
+  box-shadow:0 5px 10px rgba(30,20,8,.35);color:#3a2a06;text-align:center}
+.low .plq::before{content:"";position:absolute;inset:3px;border:1px solid rgba(70,48,6,.5);border-radius:3px;pointer-events:none}
+.low .ttl{font-family:"Cairo","Almarai",sans-serif;font-weight:900;font-size:15px;line-height:1.55;margin:0;padding-bottom:1px;color:#3a2a06;
+  text-shadow:0 1px 0 rgba(255,240,190,.7);overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;
+  -webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+.low .lab{position:absolute;z-index:2;top:10px;left:50%;transform:translateX(-50%);max-width:calc(100% - 20px);
+  padding:0 10px;border-radius:999px;background:#0F4C5C;border:1.5px solid #F6C445;color:#F6C445;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;font-family:"Cairo","Almarai",sans-serif;font-weight:800;font-size:11.5px;line-height:22px}
+.low .also{display:flex;justify-content:center;flex-wrap:wrap;gap:0 2px;margin:4px 0 0;font-size:12.5px}
+.low .also a{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;color:var(--muted);text-decoration:none}
+.low .also a:hover{color:var(--ink);text-decoration:underline}
+@media (hover:hover){.low .ep-a:hover{box-shadow:7px 7px 0 var(--gold)}}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){.low .ep-a:hover{transform:translateY(-3px)}}
+.low .ep-a:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+/* three cards (the start-here picks): on two columns the third stands centred, never alone at the side */
+.low .cards.three>.ep:nth-child(3):last-child{grid-column:1/-1;justify-self:center;width:calc(50% - 6px)}
+
+/* museum-label panels: about, follow, contact */
+.low .labels{display:grid;gap:18px;padding-block:34px 8px}
+.low .panel{position:relative;background:var(--paper);border:2px solid var(--ink);box-shadow:6px 6px 0 var(--gold);padding:18px 18px 16px}
+.low .panel .sec-h{font-size:21px;margin-bottom:10px}
+.low .panel p{margin:0;color:var(--muted)}
+.low .panel .row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.low .panel .stack{display:grid;gap:10px}
+.low .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:6px 18px;
+  border:2px solid var(--ink);border-radius:4px;background:var(--teal);color:#FBF7EE;box-shadow:3px 3px 0 var(--ink);
+  font-family:"Cairo","Almarai",sans-serif;font-weight:800;font-size:16px;text-decoration:none;text-align:center;overflow-wrap:anywhere}
+.low .btn.ghost{background:transparent;color:var(--ink);box-shadow:none;border-width:1.5px}
+.low .btn.wide{display:flex;width:100%}
+.low .pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 16px;border:1.5px solid var(--ink);
+  border-radius:999px;background:rgba(255,253,248,.7);font-weight:700;text-decoration:none}
+.low .pill:hover,.low .btn.ghost:hover{background:#fff}
+.low .ico{flex:none}
+.low .foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0 6px;margin-top:34px;padding-block:14px 18px;
+  border-top:2px solid var(--ink);color:var(--muted);font-size:14px;text-align:center}
+.low .foot a{display:inline-flex;align-items:center;min-height:44px;padding:0 6px;color:var(--muted)}
+.low .foot .copy{flex-basis:100%}
+@media (min-width:640px){
+  .low .cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px 16px}
+  .low .cards.three>.ep:nth-child(3):last-child{grid-column:auto;justify-self:stretch;width:auto}
+  .low .ttl{font-size:16px}
+  .low .plq{min-height:66px}
+}
+@media (min-width:960px){
+  .low .cards{grid-template-columns:repeat(4,minmax(0,1fr));gap:26px 20px}
+  .low .cards.three{grid-template-columns:repeat(3,minmax(0,1fr));max-width:780px;margin-inline:auto}
+  .low .labels{grid-template-columns:1.25fr 1fr 1fr;align-items:stretch}
+  .low .sec-h{font-size:27px}
+  .low .foot .copy{flex-basis:auto;margin-inline-end:auto}
+}
+@media (prefers-color-scheme:dark){
+:root .low{--ink:#F3EEE3;--muted:#C9D6D6;--paper:#0B2E37;--focus:#F6C445;color:#F3EEE3}
+:root .low .sec-h{color:#F6C445}
+:root .low .sec-h i{height:0;background:none;border-top:3px double rgba(246,196,69,.8)}
+:root .low .sec-h i::after{margin-top:-6px}
+:root .low .ep-a{background:linear-gradient(180deg,#0B2E37,#06222C);border:1px solid rgba(246,196,69,.75); box-shadow:inset 0 0 0 3px #06222C,inset 0 0 0 4px rgba(246,196,69,.3),0 12px 24px rgba(0,0,0,.45)}
+:root .low .art{border:1px solid rgba(246,196,69,.55)}
+:root .low .also a{color:#C9D6D6}
+:root .low .also a:hover{color:#F6C445}
+:root .low .panel{background:linear-gradient(180deg,rgba(5,28,36,.92),rgba(3,20,26,.94));border:1px solid rgba(246,196,69,.8);border-radius:3px; box-shadow:inset 0 0 0 5px rgba(3,20,26,.92),inset 0 0 0 6px rgba(246,196,69,.38),0 16px 32px rgba(0,0,0,.45);padding:22px 18px 18px}
+:root .low .panel::after{content:"";position:absolute;inset:9px;pointer-events:none; background:radial-gradient(circle at 40% 40%,#fff3c0 0,#c9a24a 40%,#7a5a10 62%,transparent 68%) 0 0/7px 7px no-repeat, radial-gradient(circle at 40% 40%,#fff3c0 0,#c9a24a 40%,#7a5a10 62%,transparent 68%) 100% 0/7px 7px no-repeat, radial-gradient(circle at 40% 40%,#fff3c0 0,#c9a24a 40%,#7a5a10 62%,transparent 68%) 0 100%/7px 7px no-repeat, radial-gradient(circle at 40% 40%,#fff3c0 0,#c9a24a 40%,#7a5a10 62%,transparent 68%) 100% 100%/7px 7px no-repeat}
+:root .low .panel p{color:#D9E3E2}
+:root .low .btn{background:var(--gold-grad);color:#3a2a06;border:0;border-radius:6px;box-shadow:0 6px 14px rgba(0,0,0,.4);font-weight:900; text-shadow:0 1px 0 rgba(255,240,190,.7)}
+:root .low .btn.ghost{background:transparent;color:#F6C445;border:1px solid rgba(246,196,69,.75);box-shadow:none;text-shadow:none}
+:root .low .pill{background:rgba(2,15,20,.55);border:1px solid rgba(246,196,69,.55);color:#F3EEE3}
+:root .low .pill:hover,:root .low .btn.ghost:hover{background:rgba(246,196,69,.12)}
+:root .low .foot{border-top:1px solid rgba(246,196,69,.45);color:#C9D6D6}
+:root .low .foot a{color:#C9D6D6}
+}
+@media (prefers-color-scheme:dark){
+:root body{background:#0B2E37}
+:root .low .top h1{color:transparent;background:linear-gradient(180deg,#fff0a8 0,#F6C445 .6em,#c98a14 1.3em,#c98a14 100%); -webkit-background-clip:text;background-clip:text}
+:root .low .top h1 span{color:transparent}
+:root .low .top p{color:#F6C445}
+:root .low .tag{background:var(--gold-grad);color:#3a2a06}
+}
 </style>
 </head>
 <body>
-<main>
-<div class="top"><img src="../assets/apple-touch-icon.png" alt="شعار أصل الحكاية" width="180" height="180"><h1>أصل الحكاية</h1><p>كل شيء له بداية</p></div>
-<section class="card" aria-label="آخر حلقة"><div class="latest"><img src="../assets/covers/ep-26.jpg" alt="غلاف عربة التسوق" loading="lazy" width="540" height="960"><div><span class="tag">الأحدث</span><h2>عربة التسوق</h2><a class="btn" href="https://youtube.com/shorts/ThOvtmx-Smw" rel="noopener" target="_blank">شاهد الحلقة</a></div></div></section>
-<section class="card" aria-labelledby="h-start"><h2 id="h-start">ابدأ من هنا</h2><p class="sub">جديد على القناة؟ إليك ثلاث حكايات تعرّفك بها.</p><div class="trio"><a class="mini" href="https://youtu.be/D1qaRt3w5ZI" rel="noopener" target="_blank"><img src="../assets/covers/ep-19.jpg" alt="غلاف كيس الشاي" loading="lazy" width="540" height="960"><span>كيس الشاي</span></a><a class="mini" href="https://youtu.be/Iq4B_9UR4tc" rel="noopener" target="_blank"><img src="../assets/covers/ep-18.jpg" alt="غلاف الرادار" loading="lazy" width="540" height="960"><span>الرادار</span></a><a class="mini" href="https://youtu.be/DGd7j4nPJto" rel="noopener" target="_blank"><img src="../assets/covers/ep-16.jpg" alt="غلاف نوبل" loading="lazy" width="540" height="960"><span>نوبل</span></a></div></section>
+<main class="low">
+<header class="top"><img src="../assets/apple-touch-icon.png" alt="شعار أصل الحكاية" width="180" height="180"><h1>أصل <span>الحكاية</span></h1><p>كل شيء له بداية</p></header>
+<section class="panel" aria-label="آخر حلقة"><div class="newest"><span class="art"><img src="../assets/cards/ep-26.webp" alt="" width="400" height="500"></span><div><span class="tag">الأحدث</span><h2 class="nt">عربة التسوق</h2><a class="btn" href="https://youtube.com/shorts/ThOvtmx-Smw" rel="noopener" target="_blank">شاهد الحلقة</a></div></div></section>
+<section class="panel" aria-labelledby="h-start"><h2 class="sec-h" id="h-start"><i aria-hidden="true"></i><span>ابدأ من هنا</span><i aria-hidden="true"></i></h2><p class="sub">جديد على القناة؟ إليك ثلاث حكايات تعرّفك بها.</p><ul class="cards three" role="list"><li class="ep"><a class="ep-a" href="https://youtu.be/D1qaRt3w5ZI" rel="noopener" target="_blank"><span class="art"><img src="../assets/cards/ep-19.webp" alt="" width="400" height="500" loading="lazy" decoding="async"></span><span class="plq"><h3 class="ttl">كيس الشاي</h3></span></a><p class="also"><a href="https://www.instagram.com/reel/DfZqdzpEuWy/" rel="noopener" target="_blank">إنستغرام</a><a href="https://www.facebook.com/reel/1075577715483883/" rel="noopener" target="_blank">فيسبوك</a></p></li><li class="ep"><a class="ep-a" href="https://youtu.be/Iq4B_9UR4tc" rel="noopener" target="_blank"><span class="art"><img src="../assets/cards/ep-18.webp" alt="" width="400" height="500" loading="lazy" decoding="async"></span><span class="plq"><h3 class="ttl">الرادار</h3></span></a><p class="also"><a href="https://www.instagram.com/reel/DfVS2JpPEEv/" rel="noopener" target="_blank">إنستغرام</a><a href="https://www.facebook.com/reel/1789491178973885/" rel="noopener" target="_blank">فيسبوك</a></p></li><li class="ep"><a class="ep-a" href="https://youtu.be/DGd7j4nPJto" rel="noopener" target="_blank"><span class="art"><img src="../assets/cards/ep-16.webp" alt="" width="400" height="500" loading="lazy" decoding="async"></span><span class="plq"><h3 class="ttl">نوبل</h3></span></a><p class="also"><a href="https://www.instagram.com/reel/DfPuFqiNc3w/" rel="noopener" target="_blank">إنستغرام</a><a href="https://www.facebook.com/reel/1173332141692973/" rel="noopener" target="_blank">فيسبوك</a></p></li></ul></section>
 <a class="btn wide" href="../#all">كل الحلقات (24)</a>
-<section class="card" aria-labelledby="h-follow"><h2 id="h-follow">تابعنا</h2><p class="sub">نفس الحكايات على كل المنصات.</p><div class="accts"><a class="acct" href="https://www.youtube.com/@asl.alhekaya_tv/shorts" rel="noopener" target="_blank"><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.5v5l4.5-2.5z"/></svg>يوتيوب</a><a class="acct" href="https://www.instagram.com/asl.alhekaya_tv/" rel="noopener" target="_blank"><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".7"/></svg>إنستغرام</a><a class="acct" href="https://www.tiktok.com/@asl.alhekaya_tv" rel="noopener" target="_blank"><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 3v11.2a3.6 3.6 0 1 1-3.6-3.6"/><path d="M13.5 3c.4 2.7 2.2 4.4 5 4.7"/></svg>تيك توك</a><a class="acct" href="https://www.facebook.com/1304517989419331" rel="noopener" target="_blank"><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M13.6 20v-8.6"/><path d="M10.6 11.4h5.4"/><path d="M13.6 11.4V9.6c0-1.4.8-2.1 2.3-2.1"/></svg>فيسبوك</a><a class="acct" href="https://www.threads.com/@asl.alhekaya_tv" rel="noopener" target="_blank"><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.7 12.6c0 1.9-1.6 3.1-3.6 3.1s-3.3-1.2-3.3-2.7c0-1.7 1.5-2.6 3.3-2.6s3.5 1 3.5 3"/><path d="M8.9 9.4c.9-1.6 3-2 4.5-1.3 1 .5 1.7 1.4 1.9 2.6"/></svg>ثريدز</a></div></section>
-<section class="card" aria-labelledby="h-suggest"><h2 id="h-suggest">اقترح حكاية</h2><p class="sub">ما الشيء الذي تودّ أن نحكي أصله؟ اكتب لنا اسمه.</p><a class="btn wide" href="https://docs.google.com/forms/d/e/1FAIpQLSedk0L4NDfFcKsEDVEF9TqHzi3TysLcbzONCDBg_SR7AdgwMQ/viewform" rel="noopener" target="_blank">أرسل اقتراحك</a></section>
-<section class="card" aria-labelledby="h-biz"><h2 id="h-biz">تواصل معنا</h2><p class="sub">لأي سؤال أو ملاحظة، راسلنا على الإيميل أو على إنستغرام.</p><div class="stack"><a class="btn wide" href="https://ig.me/m/asl.alhekaya_tv" rel="noopener" target="_blank">راسلنا على إنستغرام</a><a class="btn ghost wide" href="mailto:aslalhekaya.tv@gmail.com">aslalhekaya.tv@gmail.com</a></div></section>
-<footer><a href="../">الموقع</a> · <a href="../privacy.html">سياسة الخصوصية</a> · <a href="../terms.html">شروط الاستخدام</a><br>© 2026 أصل الحكاية</footer>
+<section class="panel" aria-labelledby="h-follow"><h2 class="sec-h" id="h-follow"><i aria-hidden="true"></i><span>تابعنا</span><i aria-hidden="true"></i></h2><p class="sub">الحكايات نفسها على كل المنصات.</p><div class="accts"><a class="pill" href="https://www.youtube.com/@asl.alhekaya_tv/shorts" rel="noopener" target="_blank"><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.5v5l4.5-2.5z"/></svg>يوتيوب</a><a class="pill" href="https://www.instagram.com/asl.alhekaya_tv/" rel="noopener" target="_blank"><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".7"/></svg>إنستغرام</a><a class="pill" href="https://www.tiktok.com/@asl.alhekaya_tv" rel="noopener" target="_blank"><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 3v11.2a3.6 3.6 0 1 1-3.6-3.6"/><path d="M13.5 3c.4 2.7 2.2 4.4 5 4.7"/></svg>تيك توك</a><a class="pill" href="https://www.facebook.com/1304517989419331" rel="noopener" target="_blank"><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M13.6 20v-8.6"/><path d="M10.6 11.4h5.4"/><path d="M13.6 11.4V9.6c0-1.4.8-2.1 2.3-2.1"/></svg>فيسبوك</a><a class="pill" href="https://www.threads.com/@asl.alhekaya_tv" rel="noopener" target="_blank"><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.7 12.6c0 1.9-1.6 3.1-3.6 3.1s-3.3-1.2-3.3-2.7c0-1.7 1.5-2.6 3.3-2.6s3.5 1 3.5 3"/><path d="M8.9 9.4c.9-1.6 3-2 4.5-1.3 1 .5 1.7 1.4 1.9 2.6"/></svg>ثريدز</a></div></section>
+<section class="panel" aria-labelledby="h-suggest"><h2 class="sec-h" id="h-suggest"><i aria-hidden="true"></i><span>اقترح حكاية</span><i aria-hidden="true"></i></h2><p class="sub">ما الشيء الذي تودّ أن نحكي أصله؟ اكتب لنا اسمه.</p><a class="btn wide" href="https://docs.google.com/forms/d/e/1FAIpQLSedk0L4NDfFcKsEDVEF9TqHzi3TysLcbzONCDBg_SR7AdgwMQ/viewform" rel="noopener" target="_blank">أرسل اقتراحك</a></section>
+<section class="panel" aria-labelledby="h-biz"><h2 class="sec-h" id="h-biz"><i aria-hidden="true"></i><span>تواصل معنا</span><i aria-hidden="true"></i></h2><p class="sub">لأي سؤال أو ملاحظة، راسلنا على البريد الإلكتروني أو على إنستغرام.</p><div class="stack"><a class="btn wide" href="https://ig.me/m/asl.alhekaya_tv" rel="noopener" target="_blank">راسلنا على إنستغرام</a><a class="btn ghost wide" href="mailto:aslalhekaya.tv@gmail.com">aslalhekaya.tv@gmail.com</a></div></section>
+<footer class="foot"><a href="../">الموقع</a> · <a href="../privacy.html">سياسة الخصوصية</a> · <a href="../terms.html">شروط الاستخدام</a><span class="copy">© 2026 أصل الحكاية</span></footer>
 </main>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "c151d936e0444cbea7fa60e3e09dd8c6"}'></script>
 </body>
