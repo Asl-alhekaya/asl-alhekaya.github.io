@@ -27,8 +27,10 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-sys.path[:0] = [str(HERE), str(HERE.parent / "studio_app")]  # Pages repo: site_data.py sits next to this file
+sys.path[:0] = [str(HERE), str(HERE.parent / "studio_app")]  # Pages repo: site_data.py and site_home.py sit next to this file
 from site_data import dump, promote, today_kuwait, visible  # noqa: E402
+import site_home  # noqa: E402  (the home page's first screen: intro + latest + suggestion box, design v2 2026-11-22)
+import site_privacy  # noqa: E402  (privacy.html's box sections follow SUGGEST_WORKER_URL)
 ASL = HERE.parents[1]
 _ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
 SITE = Path(_ARGS[0]) if _ARGS else Path(r"C:\Claude Code\asl-alhikaya-site")
@@ -62,6 +64,21 @@ CONTACT_NOTE = ""  # optional line under the contact title; empty = the default 
 START_HERE = ("EP-19", "EP-18", "EP-16", "EP-13")  # «ابدأ من هنا»: preferred episode ids, first three that are public and not the featured latest
 OG_IMAGE = "assets/og-links.jpg"  # 1200x630 card made by studio/site/make_og.py
 
+# ---- Inline suggestion box on the home page's first screen (design v2, owner «ابدأ البناء» 2026-11-22). ----
+# The Worker's origin only, https, no path, no trailing slash, e.g. "https://asl-suggest.<account>.workers.dev"
+# (worker.js in studio/site/proposal-2026-11-22, NOT deployed yet). Empty = the box is one button to SUGGEST_URL (the old Google
+# Form), no script and the CSP stays as before, so the site never ships a dead box. Set it only after the Worker answers, and
+# publish privacy.html's suggestion-box text in the same push.
+SUGGEST_WORKER_URL = ""
+# ?src= tags for the links we control (the page sends the tag with a suggestion; [a-z0-9-] only, the Worker's SRC_RE).
+# Print the ready links with: python build_site.py --src-links
+SRC_TAGS = {
+    "ig-bio": "Instagram bio",
+    "ig-story": "Instagram story link sticker",
+    "yt-desc": "YouTube description / pinned comment",
+    "tt-bio": "TikTok bio",
+}
+
 # ---- Visitor stats (owner 2026-11-07 «فعل كل شي»): Cloudflare Web Analytics, cookie-less, counts visits only. ----
 # The site token is public by design (it sits in every page's source, it is not a secret). Empty = no counter and the CSP
 # stays script-free. privacy.html (Pages repo, hand-written) section 3 says what is counted; keep the two in step.
@@ -70,11 +87,32 @@ CF_SCRIPT_HOST = "https://static.cloudflareinsights.com"
 CF_REPORT_HOST = "https://cloudflareinsights.com"
 
 
-def csp():
-    """The pages' Content-Security-Policy: nothing external except Google Fonts, plus the counter's two hosts when it is on."""
-    counter = f" script-src {CF_SCRIPT_HOST}; connect-src {CF_REPORT_HOST};" if ANALYTICS_TOKEN else ""
-    return ("default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-            f"font-src https://fonts.gstatic.com;{counter} base-uri 'none'; form-action 'none'")
+def worker_origin():
+    """SUGGEST_WORKER_URL checked: "" (no box) or an https origin. Anything else stops the build (never a box posting to http
+    or to a path the CSP cannot name)."""
+    url = SUGGEST_WORKER_URL
+    if url and not re.fullmatch(r"https://[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+", url):
+        raise SystemExit("SUGGEST_WORKER_URL must be empty or an https origin like https://asl-suggest.NAME.workers.dev "
+                         "(lower case, no path, no trailing slash)")
+    return url
+
+
+def csp(box=False):
+    """The pages' Content-Security-Policy: nothing external except Google Fonts, plus the counter's two hosts when it is on.
+    box=True (the home page with SUGGEST_WORKER_URL set) adds the box: script-src 'self' (assets/suggest.js), connect-src and
+    form-action the Worker. form-action also keeps 'self' because the no-script path ends in the Worker's 303 back to this
+    site, and browsers check form-action on that redirect too. Without the box it stays form-action 'none'."""
+    worker = worker_origin() if box else ""
+    scripts = (["'self'"] if worker else []) + ([CF_SCRIPT_HOST] if ANALYTICS_TOKEN else [])
+    connect = ([worker] if worker else []) + ([CF_REPORT_HOST] if ANALYTICS_TOKEN else [])
+    parts = ["default-src 'none'", "img-src 'self'", "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+             "font-src https://fonts.gstatic.com"]
+    if scripts:
+        parts.append("script-src " + " ".join(scripts))
+    if connect:
+        parts.append("connect-src " + " ".join(connect))
+    parts += ["base-uri 'none'", f"form-action {worker} 'self'" if worker else "form-action 'none'"]
+    return "; ".join(parts)
 
 
 def beacon():
@@ -105,7 +143,7 @@ def tile(ep, img):
     pic = f'<img src="{img}" alt="غلاف {E(ep["title"])}" loading="lazy" width="540" height="960">' if img else ""
     alt = "".join(f'<a href="{E(ep["links"][k])}" rel="noopener" target="_blank">{n}</a>'
                   for k, n in ALT.items() if ep.get("links", {}).get(k))
-    return (f'<div class="ep"><a class="tile" href="{url}" rel="noopener" target="_blank">{pic}'
+    return (f'<div class="ep"><a class="tile" href="{E(url)}" rel="noopener" target="_blank">{pic}'
             f'<span>{E(ep["title"])}</span></a>' + (f'<div class="alt">{alt}</div>' if alt else "") + '</div>')
 
 
@@ -120,6 +158,28 @@ def icons():
         subprocess.run([FF, "-loglevel", "error", "-y", "-i", str(LOGO), "-vf", f"scale={size}:{size}", str(out)], check=True)
 
 
+def home_assets():
+    """The first screen's pictures and script (site_home.HOME_ASSETS). Their one source is studio/site/assets/ (pictures made by
+    make_home_assets.py): the PC build copies them into the site folder; the cloud build (tools/ in the Pages repo, no such
+    folder) uses the copies install_pages.py put in assets/. Either way a missing file stops the build (no broken page)."""
+    src_dir = HERE / "assets"
+    missing = []
+    for rel in site_home.HOME_ASSETS:
+        src, dst = src_dir / rel, SITE / "assets" / rel
+        if src.is_file() and (not dst.is_file() or dst.read_bytes() != src.read_bytes()):
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(src.read_bytes())
+        if not dst.is_file():
+            missing.append(f"assets/{rel}")
+    if missing:
+        raise SystemExit("first-screen files missing in the site folder (run studio/site/cloud/install_pages.py): " + ", ".join(missing))
+
+
+def src_links():
+    """The ready ?src= links for the bios and descriptions (SRC_TAGS), one per line."""
+    return "\n".join(f"{BASE}?src={tag}   {where}" for tag, where in SRC_TAGS.items())
+
+
 def static_files(today):
     """robots.txt, sitemap.xml and a small 404 page: what search engines and wrong links need."""
     (SITE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {BASE}sitemap.xml\n", encoding="utf-8")
@@ -131,7 +191,7 @@ def static_files(today):
 <meta name="robots" content="noindex"><title>الصفحة غير موجودة | أصل الحكاية</title>
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0B1416;color:#EEF3F2;font-family:Tahoma,sans-serif;text-align:center}
 a{color:#F2C14E;font-weight:700}</style></head>
-<body><main><h1>هذي الصفحة ما لقيناها</h1><p>رجع للصفحة الرئيسية وشوف الحكايات.</p><p><a href="/">أصل الحكاية</a></p></main></body></html>
+<body><main><h1>لم نجد هذه الصفحة</h1><p>عُد إلى الصفحة الرئيسية لتتصفّح الحكايات.</p><p><a href="/">أصل الحكاية</a></p></main></body></html>
 """, encoding="utf-8")
 
 
@@ -158,6 +218,8 @@ def yt_url(e):
 def start_picks(eps):
     """«ابدأ من هنا»: the first three START_HERE episodes that are public and are not the featured latest."""
     by_id = {e["id"]: e for e in eps}
+    if not eps:
+        return []
     return [by_id[i] for i in START_HERE if i in by_id and i != eps[0]["id"]][:3]
 
 
@@ -170,12 +232,17 @@ def contact_buttons():
 CONTACT_LINE = "لأي سؤال أو ملاحظة، راسلنا على الإيميل أو على إنستغرام."
 
 
+def latest_card(e, pic, href):
+    """links.html: the newest public episode's card."""
+    return (f'<section class="card" aria-label="آخر حلقة"><div class="latest">{pic}<div><span class="tag">الأحدث</span>'
+            f'<h2>{E(e["title"])}</h2><a class="btn" href="{href}" rel="noopener" target="_blank">شاهد الحلقة</a></div></div></section>')
+
+
 def render_links(eps, imgs, root=""):
     """links.html: the phone-first hub for the Instagram bio. Same public data and same strict CSP as index.html (no
     JavaScript, no trackers). A pure function of the episodes + the constants above, so a rebuild changes nothing by itself.
     root = "" for /links.html, "../" for the short copy /l/ (same page, same canonical)."""
-    by_id = {e["id"]: e for e in eps}
-    latest = eps[0]
+    latest = eps[0] if eps else None
 
     yt = yt_url
 
@@ -186,11 +253,11 @@ def render_links(eps, imgs, root=""):
     start = start_picks(eps)  # the latest has its own card
     start_html = ""
     if start:
-        cards = "".join(f'<a class="mini" href="{yt(e)}" rel="noopener" target="_blank">{pic(e)}<span>{E(e["title"])}</span></a>'
+        cards = "".join(f'<a class="mini" href="{E(yt(e))}" rel="noopener" target="_blank">{pic(e)}<span>{E(e["title"])}</span></a>'
                         for e in start)
         start_html = ('<section class="card" aria-labelledby="h-start"><h2 id="h-start">ابدأ من هنا</h2>'
-                      f'<p class="sub">جديد على القناة؟ هذي ثلاث حكايات تعرّفك عليها.</p><div class="trio">{cards}</div></section>')
-    accounts = "".join(f'<a class="acct" href="{u}" rel="noopener" target="_blank">{icon(k)}{n}</a>' for k, n, u in HUB_ACCOUNTS)
+                      f'<p class="sub">جديد على القناة؟ إليك ثلاث حكايات تعرّفك بها.</p><div class="trio">{cards}</div></section>')
+    accounts = "".join(f'<a class="acct" href="{E(u)}" rel="noopener" target="_blank">{icon(k)}{n}</a>' for k, n, u in HUB_ACCOUNTS)
     note = E(CONTACT_NOTE) if CONTACT_NOTE else CONTACT_LINE
     home = root or "./"
     image = BASE + OG_IMAGE
@@ -263,11 +330,11 @@ footer a{{color:var(--muted)}}
 <body>
 <main>
 <div class="top"><img src="{root}assets/apple-touch-icon.png" alt="شعار أصل الحكاية" width="180" height="180"><h1>أصل الحكاية</h1><p>كل شيء له بداية</p></div>
-<section class="card" aria-label="آخر حلقة"><div class="latest">{pic(latest)}<div><span class="tag">الأحدث</span><h2>{E(latest["title"])}</h2><a class="btn" href="{yt(latest)}" rel="noopener" target="_blank">شاهد الحلقة</a></div></div></section>
+{latest_card(latest, pic(latest), E(yt(latest))) if latest else ""}
 {start_html}
 <a class="btn wide" href="{home}#all">كل الحلقات ({len(eps)})</a>
 <section class="card" aria-labelledby="h-follow"><h2 id="h-follow">تابعنا</h2><p class="sub">نفس الحكايات على كل المنصات.</p><div class="accts">{accounts}</div></section>
-<section class="card" aria-labelledby="h-suggest"><h2 id="h-suggest">اقترح حكاية</h2><p class="sub">وش الشيء اللي تبي نعرف أصله؟ اكتب لنا اسمه.</p><a class="btn wide" href="{SUGGEST_URL}" rel="noopener" target="_blank">أرسل اقتراحك</a></section>
+<section class="card" aria-labelledby="h-suggest"><h2 id="h-suggest">اقترح حكاية</h2><p class="sub">ما الشيء الذي تودّ أن نحكي أصله؟ اكتب لنا اسمه.</p><a class="btn wide" href="{SUGGEST_URL}" rel="noopener" target="_blank">أرسل اقتراحك</a></section>
 <section class="card" aria-labelledby="h-biz"><h2 id="h-biz">تواصل معنا</h2><p class="sub">{note}</p><div class="stack">{contact_buttons()}</div></section>
 <footer><a href="{home}">الموقع</a> · <a href="{root}privacy.html">سياسة الخصوصية</a> · <a href="{root}terms.html">شروط الاستخدام</a><br>© 2026 أصل الحكاية</footer>
 </main>
@@ -277,6 +344,9 @@ footer a{{color:var(--muted)}}
 
 
 def main():
+    if "--src-links" in sys.argv:
+        print(src_links())
+        return
     eps = json.loads(DATA.read_text(encoding="utf-8"))
     today = today_kuwait()
     if "--promote" in sys.argv:
@@ -287,7 +357,7 @@ def main():
     eps = visible(eps, today)
     eps.sort(key=lambda e: e.get("published", ""), reverse=True)
     imgs = {e["id"]: cover(e) for e in eps}
-    latest = eps[0]
+    latest = eps[0] if eps else None  # zero public episodes: no latest strip, the page still builds
     series = {}
     for e in eps:
         if e.get("series"):
@@ -295,20 +365,31 @@ def main():
     series_html = ""
     for name, parts in series.items():
         chips = "".join(f'<span class="part">الجزء {p.get("part")}</span>' for p in sorted(parts, key=lambda p: p.get("part", 0)))
-        series_html += f'<section><h3>سلسلة {E(name)}</h3><div class="parts">{chips}<span class="part soon">الأجزاء الجاية قريبًا</span></div></section>'
+        series_html += f'<section><h3>سلسلة {E(name)}</h3><div class="parts">{chips}<span class="part soon">الأجزاء القادمة قريبًا</span></div></section>'
     tiles = "".join(tile(e, imgs[e["id"]]) for e in eps)
-    plats = "".join(f'<a class="plat" href="{u}" rel="noopener" target="_blank">{icon(k)}{n}</a>' for k, (n, u) in LINKS.items())
+    plats = "".join(f'<a class="plat" href="{E(u)}" rel="noopener" target="_blank">{icon(k)}{n}</a>' for k, (n, u) in LINKS.items())
     picks = start_picks(eps)
-    start_section = ('<section id="start"><h3>ابدأ من هنا</h3><p class="sub">جديد على القناة؟ هذي ثلاث حكايات تعرّفك عليها.</p>'
+    start_section = ('<section id="start"><h3>ابدأ من هنا</h3><p class="sub">جديد على القناة؟ إليك ثلاث حكايات تعرّفك بها.</p>'
                      f'<div class="rail three">{"".join(tile(e, imgs[e["id"]]) for e in picks)}</div></section>') if picks else ""
-    latest_img = imgs[latest["id"]]
+    latest_img = imgs[latest["id"]] if latest else None
+    worker = worker_origin()
+    home_assets()
+    site_privacy.update(SITE, box=bool(worker))
+    nav = ([("#start", "ابدأ من هنا")] if picks else []) + [("#series", "السلاسل"), ("#all", "كل الحكايات"), ("#about", "عن القناة"),
+                                                             ("#follow", "تابعنا"), ("#contact", "تواصل معنا")]
+    first = site_home.first_screen(latest_title=latest["title"] if latest else "", latest_url=yt_url(latest) if latest else "",
+                                   latest_img=latest_img, nav=nav,
+                                   action=f"{worker}/suggest" if worker else "", fallback_url=SUGGEST_URL)
+    box_script = '<script defer src="assets/suggest.js"></script>\n' if worker else ""
     page = f"""<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="{csp()}">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="{csp(box=True)}">
 <meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#F3EEE3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B2E37" media="(prefers-color-scheme: dark)">
 <title>أصل الحكاية | كل شيء له بداية</title>
 <meta name="description" content="قصص قصيرة عن البدايات: كيف بدأت الاختراعات والاكتشافات التي نستخدمها كل يوم. فيديوهات قصيرة بالعربية الفصحى.">
 <link rel="canonical" href="{BASE}">
@@ -321,76 +402,59 @@ def main():
 <meta property="og:description" content="كل شيء له بداية… حكايات قصيرة عن أصل الأشياء.">
 {f'<meta property="og:image" content="{BASE}{latest_img}">' if latest_img else ""}
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Reem+Kufi:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Cairo:wght@700;800;900&family=Reem+Kufi:wght@600;700&display=swap">
 <style>
 :root{{--bg:#0B1416;--card:#13232A;--ink:#EEF3F2;--muted:#A7BABD;--gold:#F2C14E;--line:#1F3239}}
 *{{box-sizing:border-box}}
+html{{-webkit-text-size-adjust:100%}}
 body{{margin:0;background:var(--bg);color:var(--ink);font-family:"Almarai",Tahoma,sans-serif;line-height:1.8}}
 a{{color:inherit}}
 .wrap{{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}}
-header{{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-block:14px}}
-.logo{{font-family:"Reem Kufi","Almarai",sans-serif;font-size:26px;color:var(--gold);text-decoration:none}}
-nav{{display:flex;gap:16px;flex-wrap:wrap;font-size:15px}}
-nav a{{color:var(--muted);text-decoration:none}}
-nav a:hover,nav a:focus-visible{{color:var(--ink)}}
-.hero{{display:grid;grid-template-columns:1fr 280px;gap:28px;align-items:end;padding-block:34px;background:radial-gradient(120% 90% at 85% 10%,#1E5463 0%,transparent 60%)}}
 .tag{{display:inline-block;background:var(--gold);color:#1A1405;font-weight:800;border-radius:6px;padding:2px 10px;font-size:13px}}
 h1,h2,h3{{font-family:"Reem Kufi","Almarai",sans-serif;text-wrap:balance;margin:0}}
-.hero h1{{font-size:clamp(32px,6vw,56px);margin:10px 0 8px;line-height:1.3}}
-.hero p{{color:var(--muted);font-size:17px;margin:0 0 18px;max-width:54ch}}
-.btns{{display:flex;gap:10px;flex-wrap:wrap}}
-.btn{{background:var(--gold);color:#1A1405;padding:11px 18px;border-radius:10px;font-weight:800;text-decoration:none}}
+.btn{{display:inline-flex;align-items:center;min-height:48px;background:var(--gold);color:#1A1405;padding:8px 18px;border-radius:10px;font-weight:800;text-decoration:none}}
 .btn.ghost{{background:transparent;color:var(--ink);border:1px solid #3A5560}}
-.btn:focus-visible,.tile:focus-visible,.plat:focus-visible{{outline:3px solid var(--gold);outline-offset:3px}}
-.hero img{{width:100%;height:auto;border-radius:16px;box-shadow:0 30px 60px rgba(0,0,0,.6)}}
-section{{padding-block:18px}}
-h3{{font-size:22px;margin-bottom:12px}}
+.btn:focus-visible,.tile:focus-visible,.plat:focus-visible,.alt a:focus-visible,footer a:focus-visible{{outline:3px solid var(--gold);outline-offset:3px}}
+.wrap section{{padding-block:18px}}
+.wrap h3{{font-size:22px;margin-bottom:12px}}
 .parts{{display:flex;gap:8px;flex-wrap:wrap}}
 .part{{background:var(--card);border:1px solid #23404A;border-radius:10px;padding:10px 14px;font-weight:700;font-size:14px}}
 .part.soon{{opacity:.55}}
 .rail{{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}}
-.ep{{display:flex;flex-direction:column;gap:6px}}
-.alt{{display:flex;gap:12px;font-size:12px}}
-.alt a{{color:var(--muted)}}
+.ep{{display:flex;flex-direction:column;gap:2px}}
+.alt{{display:flex;gap:4px;font-size:12px;flex-wrap:wrap}}
+.alt a{{color:var(--muted);display:inline-flex;align-items:center;min-height:44px;padding:0 6px}}
 .tile{{display:block;position:relative;border-radius:12px;overflow:hidden;background:var(--card);text-decoration:none}}
 .tile img{{width:100%;height:auto;display:block}}
 .tile span{{position:absolute;bottom:0;left:0;right:0;padding:26px 8px 8px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:14px;font-weight:800}}
 .about p{{color:var(--muted);max-width:68ch;margin:0}}
 .plats{{display:flex;gap:10px;flex-wrap:wrap}}
-.plat{{display:inline-flex;align-items:center;gap:8px;border:1px solid #2E4A54;border-radius:999px;padding:9px 18px;font-weight:700;text-decoration:none}}
+.plat{{display:inline-flex;align-items:center;gap:8px;min-height:48px;border:1px solid #2E4A54;border-radius:999px;padding:0 18px;font-weight:700;text-decoration:none}}
 .sub{{color:var(--muted);margin:-6px 0 12px}}
 .rail.three{{grid-template-columns:repeat(3,minmax(0,1fr));max-width:560px}}
 .stack{{display:grid;gap:10px;max-width:360px}}
 .btn.wide{{display:flex;justify-content:center}}
-.logo{{display:inline-flex;align-items:center;gap:10px}}
-.logo img{{width:36px;height:36px;border-radius:50%;box-shadow:0 0 0 2px var(--gold)}}
 .ico{{flex:none}}
-footer{{border-top:1px solid var(--line);color:var(--muted);padding-block:18px;margin-top:18px;font-size:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}}
-footer a{{color:var(--muted)}}
-@media (max-width:640px){{.hero{{grid-template-columns:1fr}} .hero img{{max-width:240px}}}}
+footer{{border-top:1px solid var(--line);color:var(--muted);padding-block:10px;margin-top:18px;font-size:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0 8px}}
+footer a{{color:var(--muted);display:inline-flex;align-items:center;min-height:44px;padding:0 4px}}
 @media (prefers-reduced-motion:no-preference){{.tile img{{transition:transform .2s}} .tile:hover img{{transform:scale(1.03)}}}}
+{site_home.css()}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header><a class="logo" href="#top"><img src="assets/apple-touch-icon.png" alt="" width="36" height="36">أصل الحكاية</a><nav><a href="#start">ابدأ من هنا</a><a href="#series">السلاسل</a><a href="#all">كل الحكايات</a><a href="#about">عن القناة</a><a href="#follow">تابعنا</a><a href="#contact">تواصل معنا</a></nav></header>
 <main id="top">
-<div class="hero">
-<div><span class="tag">الأحدث</span><h1>{E(latest["title"])}</h1><p>كل شيء له بداية. نعود إلى اللحظة الأولى وراء الأشياء التي نستخدمها كل يوم، ونرويها حكايةً قصيرة لا تُنسى.</p>
-<div class="btns"><a class="btn" href="{latest.get("links", {}).get("youtube", LINKS["youtube"][1])}" rel="noopener" target="_blank">شاهد على يوتيوب</a><a class="btn ghost" href="#all">كل الحكايات</a></div></div>
-{f'<img src="{latest_img}" alt="غلاف {E(latest["title"])}" width="540" height="960">' if latest_img else ""}
-</div>
+{first}
+<div class="wrap">
 {start_section}
 <div id="series">{series_html}</div>
 <section id="all"><h3>كل الحكايات</h3><div class="rail">{tiles}</div></section>
 <section id="about" class="about"><h3>عن أصل الحكاية</h3><p>فيديوهات قصيرة بالعربية الفصحى عن أصل الاختراعات والاكتشافات. كل معلومة نذكرها لها مصدر موثوق على الأقل، والرسوم مولّدة بالذكاء الاصطناعي لتصوير الأجواء، وهي ليست صورًا تاريخية.</p></section>
 <section id="follow"><h3>تابعنا</h3><div class="plats">{plats}</div></section>
-<section id="suggest"><h3>اقترح حكاية</h3><p class="sub">وش الشيء اللي تبي نعرف أصله؟ اكتب لنا اسمه.</p><div class="stack"><a class="btn wide" href="{SUGGEST_URL}" rel="noopener" target="_blank">أرسل اقتراحك</a></div></section>
 <section id="contact"><h3>تواصل معنا</h3><p class="sub">{E(CONTACT_NOTE) if CONTACT_NOTE else CONTACT_LINE}</p><div class="stack">{contact_buttons()}</div></section>
-</main>
-<footer><span>© 2026 أصل الحكاية</span><span><a href="links.html">كل الروابط</a> · <a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">شروط الاستخدام</a></span></footer>
 </div>
-{beacon()}</body>
+</main>
+<div class="wrap"><footer><span>© 2026 أصل الحكاية</span><span><a href="links.html">كل الروابط</a> · <a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">شروط الاستخدام</a></span></footer></div>
+{box_script}{beacon()}</body>
 </html>
 """
     (SITE / "index.html").write_text(page, encoding="utf-8")
@@ -399,7 +463,7 @@ footer a{{color:var(--muted)}}
     (SITE / "l" / "index.html").write_text(render_links(eps, imgs, "../"), encoding="utf-8")
     icons()
     static_files(today)
-    print(f"index.html + links.html + l/: {len(eps)} episodes, latest «{latest['title']}», covers {sum(1 for v in imgs.values() if v)}")
+    print(f"index.html + links.html + l/: {len(eps)} episodes, latest «{latest['title'] if latest else '-'}», covers {sum(1 for v in imgs.values() if v)}")
 
 
 if __name__ == "__main__":

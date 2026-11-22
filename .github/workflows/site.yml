@@ -19,6 +19,7 @@ env:
   TZ: Asia/Kuwait
   ASL_SITE_FFMPEG: none   # covers and icons are already committed; the cloud build converts nothing
   ASL_SITE_DATA: ${{ github.workspace }}/data/episodes-public.json
+  PYTHONDONTWRITEBYTECODE: "1"   # no tools/__pycache__ in the commit (it changed on almost every run)
 jobs:
   build:
     runs-on: ubuntu-24.04

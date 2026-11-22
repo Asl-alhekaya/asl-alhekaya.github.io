@@ -1,0 +1,3 @@
+# Installed into the Pages repo as .gitignore by studio/site/cloud/install_pages.py
+__pycache__/
+*.pyc
