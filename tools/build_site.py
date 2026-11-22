@@ -66,10 +66,11 @@ OG_IMAGE = "assets/og-links.jpg"  # 1200x630 card made by studio/site/make_og.py
 
 # ---- Inline suggestion box on the home page's first screen (design v2, owner «ابدأ البناء» 2026-11-22). ----
 # The Worker's origin only, https, no path, no trailing slash, e.g. "https://asl-suggest.<account>.workers.dev"
-# (worker.js in studio/site/proposal-2026-11-22, NOT deployed yet). Empty = the box is one button to SUGGEST_URL (the old Google
-# Form), no script and the CSP stays as before, so the site never ships a dead box. Set it only after the Worker answers, and
-# publish privacy.html's suggestion-box text in the same push.
-SUGGEST_WORKER_URL = ""
+# (worker.js in studio/site/proposal-2026-11-22; deployed 2026-11-22 with studio/site/deploy_worker.py, live tests passed).
+# Empty = the box is one button to SUGGEST_URL (the old Google Form), no script and the CSP stays as before, so the site never
+# ships a dead box. The value reaches the live site only through install_pages.py --push (owner's yes); privacy.html's
+# suggestion-box text follows it in the same cloud run. Rollback of the box only: set "" and push again.
+SUGGEST_WORKER_URL = "https://asl-suggest.asl-alhekaya.workers.dev"
 # ?src= tags for the links we control (the page sends the tag with a suggestion; [a-z0-9-] only, the Worker's SRC_RE).
 # Print the ready links with: python build_site.py --src-links
 SRC_TAGS = {
