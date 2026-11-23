@@ -423,7 +423,9 @@ def main():
     first = site_home.first_screen(latest_title=latest["title"] if latest else "", latest_url=yt_url(latest) if latest else "",
                                    latest_img=(card_art(latest) or latest_img) if latest else None, nav=nav,
                                    action=f"{worker}/suggest" if worker else "", fallback_url=SUGGEST_URL)
-    box_script = '<script defer src="assets/suggest.js"></script>\n' if worker else ""
+    # fetchpriority high (2026-11-24): at the default low priority, on a slow phone the box showed 4-16 s before its script ran,
+    # and a tap in that gap gave no sign of sending («النعال» arrived three times)
+    box_script = '<script defer fetchpriority="high" src="assets/suggest.js"></script>\n' if worker else ""
     note = E(CONTACT_NOTE) if CONTACT_NOTE else CONTACT_LINE
     page = f"""<!doctype html>
 <html lang="ar" dir="rtl">

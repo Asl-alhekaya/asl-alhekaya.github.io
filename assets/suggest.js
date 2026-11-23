@@ -11,14 +11,16 @@
     return; // old browser: the plain form stays
   var MAX = 200,
     MIN = 3,
-    TIMEOUT_MS = 15000;
+    TIMEOUT_MS = 15000,
+    SHOW_MS = 900; // the ink fill shows at least this long, so a fast answer still reads as «sent»
   var text = document.getElementById('stext'),
     count = document.getElementById('scount');
   var msg = document.getElementById('smsg'),
     btn = document.getElementById('sbtn'),
     label = document.getElementById('sbtn-label');
   var box = document.getElementById('suggest'),
-    thanks = document.getElementById('thanks');
+    thanks = document.getElementById('thanks'),
+    said = document.getElementById('ssaid');
   var rendered = Date.now(),
     lastTopic = null;
   form.noValidate = true; // the script shows its own messages; without it the browser's required/minlength check runs
@@ -100,7 +102,7 @@
     btn.disabled = on;
     btn.classList.toggle('sending', on);
     text.readOnly = on;
-    label.textContent = on ? 'جارٍ الإرسال…' : 'أرسل الاقتراح';
+    label.textContent = on ? 'نختم اقتراحك…' : 'أرسل الاقتراح';
   }
   function send() {
     var ctrl = window.AbortController ? new AbortController() : null;
@@ -147,14 +149,24 @@
     document.getElementById('st').value = String(Date.now() - rendered);
     setMsg('');
     setSending(true);
+    var started = Date.now();
     send()
       .then(function (res) {
-        setSending(false);
         if (res && res.ok) {
-          box.classList.add('done');
-          thanks.focus();
+          btn.classList.add('full'); // the ink reaches the end, then the seal
+          setTimeout(
+            function () {
+              setSending(false);
+              btn.classList.remove('full');
+              said.textContent = '«' + v + '»'; // the visitor's own words: proof that this one arrived
+              box.classList.add('done');
+              thanks.focus();
+            },
+            Math.max(0, SHOW_MS - (Date.now() - started)) + 250,
+          );
           return;
         }
+        setSending(false);
         setMsg(ERRORS[res && res.code] || ERRORS.server); // the text stays in the box
         if (res && (res.code === 'personal' || res.code === 'length'))
           text.setAttribute('aria-invalid', 'true');
@@ -179,7 +191,9 @@
     text.placeholder = PROMPTS[p];
     count.textContent = '0 / ' + MAX;
     setMsg('');
-    rendered = Date.now();
+    said.textContent = '';
+    // `rendered` stays the page-load time: the Worker silently drops sends faster than 2.5 s after it, and a second idea
+    // typed quickly is a real one (resetting it here lost such ideas behind a «sent» panel until 2026-11-24)
     text.focus();
   });
 })();

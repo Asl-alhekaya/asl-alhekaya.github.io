@@ -109,37 +109,55 @@ DAY_CSS = r"""
   transition:background .15s,color .15s,border-color .15s}
 .stage .chip input:checked + span{background:#0F4C5C;color:#FBF7EE;border-color:#0F4C5C}
 .stage .chip input:focus-visible + span{outline:3px solid var(--focus);outline-offset:2px}
-.stage .field{position:relative}
-.stage textarea{display:block;width:100%;min-height:86px;resize:none;border:2px solid #14232B;border-radius:8px;background:#FFFDF8;
-  color:var(--text);font:inherit;font-size:16px;line-height:1.6;padding:10px 12px 22px}
-.stage textarea::placeholder{color:var(--muted);opacity:.92}
-.stage textarea:focus{outline:2px solid var(--focus);outline-offset:1px}
+.stage .field{position:relative;margin-top:30px}
+.stage .field .tab{position:absolute;top:-28px;right:0;z-index:1;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px 2px;
+  border-radius:9px 9px 0 0;background:#0F4C5C;color:#FBF7EE;font-family:"Cairo","Almarai",sans-serif;font-weight:900;font-size:14.5px;line-height:1}
+.stage .field .tab svg{width:15px;height:15px;flex:none}
+.stage textarea{display:block;width:100%;min-height:86px;resize:none;border:2.5px solid #0F4C5C;border-radius:12px 0 12px 12px;background:#FFF4CC;
+  color:#14232B;font:inherit;font-size:16px;line-height:1.6;padding:10px 26px 22px 12px}
+.stage textarea::placeholder{color:#55636A;opacity:1}
+.stage textarea:focus{outline:3px solid var(--focus);outline-offset:1px}
+/* a blinking caret in the empty field says «type here»; the real caret takes over on focus */
+.stage .field .caret{position:absolute;top:14px;right:13px;width:2.5px;height:21px;border-radius:1px;background:#14232B;pointer-events:none}
+.stage textarea:focus ~ .caret,.stage textarea:not(:placeholder-shown) ~ .caret{display:none}
+@media (prefers-reduced-motion:no-preference){.stage .field .caret{animation:blink 1.05s steps(1) infinite}@keyframes blink{50%{opacity:0}}}
 .stage textarea[aria-invalid="true"]{border-color:var(--err)}
 .stage textarea[readonly]{opacity:.7}
-.stage .count{position:absolute;bottom:4px;left:10px;font-size:12px;color:var(--muted)}
+.stage .count{position:absolute;bottom:4px;left:10px;font-size:12px;color:#55636A}
 /* honeypot: clipped in place (an off-screen left:-9999px would make a horizontal scroll in RTL) */
 .stage .hp{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 .stage .msg{margin:8px 2px 0;font-size:14px;font-weight:700;color:var(--err)}
 .stage .msg:empty{display:none}
 .stage .oops{display:none}
 .stage .oops:target{display:block}
-.stage .pbtn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:50px;margin-top:12px;
+.stage .pbtn{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:50px;margin-top:12px;
   border:2px solid #14232B;border-radius:4px;background:#0F4C5C;color:#FBF7EE;box-shadow:4px 4px 0 #14232B;padding:0 14px;
   font-family:"Cairo","Almarai",sans-serif;font-weight:800;font-size:17px;cursor:pointer;text-decoration:none}
 .stage .pbtn:active{transform:translate(1px,1px);box-shadow:2px 2px 0 #14232B}
 .stage .pbtn:focus-visible,.stage .latest:focus-visible,.stage .note a:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 .stage .pbtn[disabled]{opacity:.8;cursor:progress}
 .stage .pbtn.ghost{background:transparent;color:var(--text);border:1px solid var(--frame);box-shadow:none}
-.stage .spin{width:18px;height:18px;border-radius:50%;border:2.5px solid currentColor;border-inline-end-color:transparent;display:none}
-.stage .sending .spin{display:inline-block}
-@media (prefers-reduced-motion:no-preference){.stage .sending .spin{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}}
+.stage .pbtn .ink{position:absolute;inset:0;transform:scaleX(0);transform-origin:100% 50%;background:#2E8AA3;pointer-events:none}
+.stage .pbtn .ink::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#F6C445;box-shadow:0 0 12px #F6C445}
+.stage #sbtn-label{position:relative;z-index:1}
+.stage .pbtn.sending .ink{transform:scaleX(.94);transition:transform 2.6s cubic-bezier(.2,.75,.3,1)}
+.stage .pbtn.full .ink{transform:scaleX(1);transition:transform .25s ease-out}
 .stage .note{color:var(--muted);font-size:12.5px;margin:10px 2px 0;line-height:1.6;text-align:center}
 .stage .note a{color:var(--muted);display:inline-block;padding:13px 6px;margin:-13px 0}
 .stage .thanks{display:none;text-align:center;padding:4px 2px 2px}
-.stage .thanks .book{position:relative;display:inline-block;width:84px;height:98px;margin-top:4px}
-.stage .thanks .book img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(30,20,8,.35))}
-.stage .thanks .book .s4{width:22px;height:22px;top:-4px;left:-20px}
-.stage .thanks .book .s5{width:9px;height:9px;top:22px;left:-26px}
+.stage .thanks .seal{display:inline-grid;place-items:center;align-content:center;gap:1px;width:96px;height:96px;margin-top:4px;border-radius:50%;
+  color:#3A2706;background:radial-gradient(circle at 35% 30%,#FFE9A3 0 18%,#E3B04B 45%,#A8741E 78%,#7A5212 100%);
+  box-shadow:inset 0 0 0 5px rgba(122,82,18,.35),inset 0 0 0 8px rgba(255,233,163,.5),0 5px 0 rgba(0,0,0,.18);
+  font-family:"Cairo","Almarai",sans-serif;font-weight:900;font-size:20px;line-height:1}
+.stage .thanks .seal svg{width:26px;height:26px}
+.stage .thanks .said{display:inline-block;max-width:100%;margin:8px 0 0;padding:3px 16px;border-radius:999px;overflow-wrap:anywhere;
+  background:#FFF4CC;border:2px solid #0F4C5C;color:#14232B;font-weight:800;font-size:16px}
+.stage .thanks .said:empty{display:none}
+@media (prefers-reduced-motion:no-preference){
+  .stage .card.done .seal,.stage #thanks:target .seal{animation:stamp .42s cubic-bezier(.2,1.45,.45,1) both}
+  .stage .card.done{animation:thud .2s .32s ease-out}
+  @keyframes stamp{0%{transform:scale(2.2);opacity:0}100%{transform:scale(1);opacity:1}}
+  @keyframes thud{40%{transform:translateY(3px)}}}
 .stage .thanks h3{font-weight:800;font-size:21px;margin-top:6px;color:var(--text)}
 .stage .thanks p{color:var(--muted);margin:4px 0 0}
 .stage .card.done form,.stage .card:has(#thanks:target) form{display:none}
@@ -241,9 +259,13 @@ N .stage .card .line::after{content:"";width:40px;border-top:3px double rgba(246
 N .stage .lead{color:#D9E3E2}
 N .stage .chip span{padding:0 10px;font-size:13px;background:rgba(2,15,20,.6);color:#F3EEE3;border:1px solid rgba(246,196,69,.45)}
 N .stage .chip input:checked + span{background:var(--gold-grad);color:#3a2a06;border-color:#F6C445}
-N .stage textarea{background:rgba(2,15,20,.6);border:1px solid rgba(246,196,69,.42);border-radius:4px;color:#F3EEE3}
-N .stage textarea::placeholder{color:#C9D6D6}
-N .stage .count{color:#C9D6D6}
+N .stage textarea{background:#FBF5E4;border:2px solid #F6C445;border-radius:8px 0 8px 8px;color:#14232B}
+N .stage textarea::placeholder{color:#55636A}
+N .stage .count{color:#55636A}
+N .stage .field .tab{background:var(--gold-grad);color:#3a2a06;text-shadow:0 1px 0 rgba(255,240,190,.7)}
+N .stage .pbtn .ink{background:linear-gradient(90deg,#fff7d6,#ffe9a0)}
+N .stage .pbtn .ink::before{background:#7a5212;box-shadow:none}
+N .stage .thanks .said{background:#FBF5E4;border-color:#F6C445;color:#14232B}
 N .stage .pbtn{background:var(--gold-grad);color:#3a2a06;border:0;border-radius:6px;box-shadow:0 6px 14px rgba(0,0,0,.4);font-weight:900;font-size:19px;text-shadow:0 1px 0 rgba(255,240,190,.7)}
 N .stage .pbtn::before{content:"";position:absolute;inset:4px;border:1px solid rgba(70,48,6,.55);border-radius:4px;pointer-events:none}
 N .stage .pbtn:active{box-shadow:0 3px 8px rgba(0,0,0,.4)}
@@ -251,7 +273,6 @@ N .stage .pbtn.ghost{background:transparent;color:#F6C445;border:1px solid rgba(
 N .stage .pbtn.ghost::before{display:none}
 N .stage .note{color:#D9E3E2}
 N .stage .note a{color:#D9E3E2}
-N .stage .thanks .book{display:none}
 N .stage .thanks h3{color:#F6C445}
 N .stage .thanks p{color:#D9E3E2}
 N .stage .hero{display:block;position:relative;width:88%;margin:20% auto 0;aspect-ratio:870/288}
@@ -309,6 +330,10 @@ N .stage .floor{height:88px;margin-top:28px}
 N .stage::before{bottom:88px}
 N .stage .plaque{top:-28px;width:300px;height:58px;font-size:20px}
 """
+PEN = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" '
+       'aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>')
+CHECK = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" '
+         'aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>')
 DIAMOND = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1 13 7 7 13 1 7Z"/></svg>'
 SHORT = "(max-width:899px) and (max-height:720px)"
 DESK = "(min-width:900px)"
@@ -361,22 +386,24 @@ def suggest_form(action: str) -> str:
 <h2 id="h-suggest">{QUESTION}</h2>
 <div class="line" aria-hidden="true"></div>
 <fieldset><legend class="sr">من أي باب هو؟ (اختياري)</legend><div class="chips">{chips}</div></fieldset>
-<div class="field"><label for="stext" class="sr">{QUESTION}</label>
+<div class="field"><label for="stext" class="tab">{PEN}اقترح هنا</label>
 <textarea id="stext" name="text" rows="2" required minlength="{TEXT_MIN}" maxlength="{TEXT_MAX}" aria-describedby="smsg" placeholder="{PLACEHOLDER}"></textarea>
+<span class="caret" aria-hidden="true"></span>
 <span class="count" id="scount" aria-hidden="true">0 / {TEXT_MAX}</span></div>
 <div class="hp" aria-hidden="true"><label>موقعك <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
 <input type="hidden" name="src" id="ssrc" value="">
 <input type="hidden" name="t" id="st" value="">
 <p class="msg" id="smsg" role="status" aria-live="polite"></p>
 <p class="msg oops" id="suggest-error">لم يصل الاقتراح، جرّب مرة أخرى بعد قليل.</p>
-<button class="pbtn" id="sbtn" type="submit"><span class="spin" aria-hidden="true"></span><span id="sbtn-label">أرسل الاقتراح</span></button>
+<button class="pbtn" id="sbtn" type="submit"><span class="ink" aria-hidden="true"></span><span id="sbtn-label">أرسل الاقتراح</span></button>
 <p class="note">دون تسجيل ودون ذكر اسمك، ونقرأ كل اقتراح. لا تكتب رقمًا أو حسابًا أو أي معلومة شخصية. <a href="privacy.html">الخصوصية</a></p>
 </form>
 <div class="thanks" id="thanks" tabindex="-1">
-<span class="book" aria-hidden="true"><img src="assets/home/book.webp" alt="" width="84" height="98">{STAR.format(cls="s4")}{STAR.format(cls="s5")}</span>
+<span class="seal" aria-hidden="true">{CHECK}وصل</span>
 <h3>وصل اقتراحك، شكرًا لك</h3>
+<p class="said" id="ssaid"></p>
 <p>نقرأ كل اقتراح بأنفسنا. وإذا صار حكاية، ستراه على القناة.</p>
-<a class="pbtn ghost" href="#suggest" id="sagain">اقترح شيئًا آخر</a>
+<a class="pbtn ghost" href="#suggest" id="sagain">عندي فكرة أخرى</a>
 </div>"""
 
 
