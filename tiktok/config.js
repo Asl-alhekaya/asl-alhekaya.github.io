@@ -2,7 +2,7 @@
 // the bot (Google Apps Script) holds it and exchanges the authorization code.
 window.ASL_TIKTOK = {
   clientKey: "awl3zzyse726oki9",
-  scope: "user.info.basic,video.upload",
+  scope: "user.info.basic,user.info.stats,video.list,video.upload",
   // The same app's Sandbox (only for the TikTok review demo video): used when the page is opened with ?sandbox=1.
   sandboxKey: "sbaw0at8953mt8q6mi",
   sandboxScope: "user.info.basic,user.info.stats,video.list,video.upload",
