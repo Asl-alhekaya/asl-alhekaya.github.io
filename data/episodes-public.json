@@ -326,5 +326,19 @@
       "instagram": "https://www.instagram.com/reel/DgGRcc3BwUn/",
       "facebook": "https://www.facebook.com/reel/1471416381009936/"
     }
+  },
+  {
+    "id": "EP-28",
+    "title": "الشفاطة المرنة",
+    "series": null,
+    "part": null,
+    "published": "2026-11-25",
+    "status": "published",
+    "cover": "card-ep28.png",
+    "links": {
+      "youtube": "https://youtube.com/shorts/khwyxBogZ3c",
+      "instagram": "https://www.instagram.com/reel/DgLTj9cpi6X/",
+      "facebook": "https://www.facebook.com/reel/1461837689273531/"
+    }
   }
 ]
